@@ -1,0 +1,1012 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<?asciidoc-toc?>
+<?asciidoc-numbered?>
+
+<article lang="en">
+<articleinfo>
+    <title>Couchbase Ruby Client Manual</title>
+    <author>
+        <firstname>Sergey</firstname>
+        <surname>Avseyev</surname>
+        <email>sergey@couchbase.com</email>
+    </author>
+    <authorinitials>SA</authorinitials>
+</articleinfo>
+<abstract id="_abstract">
+<simpara>This is the manual for 1.2 of the Couchbase Ruby client library, which
+is compatible with Couchbase Server 2.0.</simpara>
+<simpara>This manual provides a reference to the key features and best
+practices for using the Ruby Couchbase Client Library . The content
+constitutes a reference to the core API, not a complete guide to the
+entire API functionality.</simpara>
+<table
+frame="all"
+rowsep="1" colsep="1"
+>
+<title>Product Compatibility for Couchbase Ruby SDK</title>
+<tgroup cols="3">
+<colspec colname="col_1" colwidth="33*"/>
+<colspec colname="col_2" colwidth="33*"/>
+<colspec colname="col_3" colwidth="33*"/>
+<thead>
+<row>
+<entry align="left" valign="top"> Product              </entry>
+<entry align="left" valign="top"> Compatible </entry>
+<entry align="left" valign="top"> All Features</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry align="left" valign="top"><simpara>Couchbase Server 1.8</simpara></entry>
+<entry align="left" valign="top"><simpara>✓</simpara></entry>
+<entry align="left" valign="top"><simpara>✓</simpara></entry>
+</row>
+<row>
+<entry align="left" valign="top"><simpara>Couchbase Server 2.0</simpara></entry>
+<entry align="left" valign="top"><simpara>✓</simpara></entry>
+<entry align="left" valign="top"><simpara>✓</simpara></entry>
+</row>
+</tbody>
+</tgroup>
+</table>
+<itemizedlist><title>External Community Resources</title>
+<listitem>
+<simpara>
+<ulink url="http://www.couchbase.com/develope/ruby/next">Home page on couchbase.com</ulink>
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<ulink url="https://rubygems.org/gems/couchbase">Download client library</ulink>
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<ulink url="http://rubydoc.info/gems/couchbase">RDoc</ulink>
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<ulink url="http://www.couchbase.com/forums/sdks/sdks">SDK forum</ulink>
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<ulink url="http://couchbase.com/issues/browse/RCBC">Issue tracker</ulink>
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<ulink url="https://github.com/couchbase/couchbase-ruby-client">Sourse code repository</ulink>
+</simpara>
+</listitem>
+</itemizedlist>
+<warning><simpara>The following document is still in production, and is not
+         considered complete or exhaustive.</simpara></warning>
+</abstract>
+<section id="_getting_started">
+<title>Getting Started</title>
+<simpara>Awesome that you want to learn more about Couchbase! This is the right
+place to start your journey. This chapter will teach you the basics of
+Couchbase and how to interact with it through the Ruby Client SDK.</simpara>
+<simpara>If you haven&#8217;t already, download the latest Couchbase Server 2.0
+release and install it. While following the download instructions and
+setup wizard, make sure install the <literal>beer-sample</literal> default bucket. It
+contains sample data of beers and breweries, which we&#8217;ll be using in
+our examples here. If you&#8217;ve already installed Couchbase Server 2.0
+and didn&#8217;t install the <literal>beer-sample</literal> bucket (or if you deleted it),
+just open the Web-UI and navigate to "Settings/Sample Buckets".
+Activate the <literal>beer-sample</literal> checkbox and click "Create". In the right
+hand corner you&#8217;ll see a notification box that will disappear once the
+bucket is ready to be used.</simpara>
+<simpara>Here&#8217;s a quick outline of what you&#8217;ll learn in this chapter:</simpara>
+<orderedlist numeration="arabic">
+<listitem>
+<simpara>
+Install the library with its dependencies.
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+Write a simple program to demonstrate connecting to Couchbase and
+  saving some documents.
+</simpara>
+</listitem>
+</orderedlist>
+<simpara>From here on, we&#8217;ll assume that you have a Couchbase Server 2.0
+release running and the <literal>beer-sample</literal> bucket configured. If you need
+any help on setting up everything, there is plenty of documentation
+available:</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+Using the <ulink url="http://couchbase.com/docs/couchbase-manual-2.0/couchbase-introduction.html">Couchbase Web Console</ulink>,
+  for information on using the Couchbase Administrative Console,
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<ulink url="http://couchbase.com/docs/couchbase-manual-2.0/couchbase-admin-web-console.html">Couchbase CLI</ulink>,
+  for the command line interface,
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<ulink url="http://couchbase.com/docs/couchbase-manual-2.0/couchbase-admin-restapi.html">Couchbase REST API</ulink>,
+  for creating and managing Couchbase resources.
+</simpara>
+</listitem>
+</itemizedlist>
+<section id="_installing_the_couchbase_client_libraries">
+<title>Installing the Couchbase Client Libraries</title>
+<simpara>Before continuing you should ensure you have a working Ruby
+environment up and running. We recommend Ruby 1.9.2 or 1.8.7
+<ulink url="http://ruby-lang.org">http://ruby-lang.org</ulink>.</simpara>
+<simpara>You can verify that Ruby is installed by typing the following command:</simpara>
+<screen>shell&gt; ruby -v
+ruby 1.9.3p286 (2012-10-12 revision 37165) [x86_64-linux]</screen>
+<simpara>Another dependency needed for client is libcouchbase. Please consult
+[<ulink url="http://www.couchbase.com/develop/c/current]">C Client Library</ulink> page
+about ways to get it on your system. Here we will assume you are using
+the Ubuntu/Debian GNU/Linux family and have the <literal>apt</literal> tool.</simpara>
+<simpara>Note that the libcouchbase dependency is not needed if you are on
+Microsoft Windows, as all dependencies are bundled in the source.</simpara>
+<simpara>Once you have installed libcouchbase, you are then ready to install
+the most recent client using rubygems.</simpara>
+<screen>shell&gt; gem install couchbase
+Fetching: couchbase-1.2.0.gem (100%)
+Building native extensions.  This could take a while...
+Successfully installed couchbase-1.2.0
+1 gem installed</screen>
+<simpara>Lets load and verify library version.</simpara>
+<screen>shell&gt; ruby -rrubygems -rcouchbase -e 'puts Couchbase::VERSION'
+1.2.0</screen>
+</section>
+<section id="_hello_couchbase">
+<title>Hello Couchbase</title>
+<simpara>To follow the tradition of programming tutorials, we&#8217;ll start with
+"Hello Couchbase". In the first example, we&#8217;ll connect to the Cluster,
+retrieve the document, print it out and modify it. This first
+example contains the full sourcecode, but in later example we&#8217;ll omit
+the preamble and assume we&#8217;re already connected to the cluster.</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">require 'rubygems'
+require 'couchbase'
+
+client = Couchbase.connect(:bucket =&gt; "beer-sample",
+                           :host =&gt; "localhost")
+
+beer = client.get("aass_brewery-juleol")
+puts "#{beer['name']}, ABV: #{beer['abv']}"
+
+beer['comment'] = "Random beer from Norway"
+client.replace("aass_brewery-juleol", beer)
+
+client.disconnect</programlisting>
+<simpara>While this code should be very easy to grasp, there is a lot going on
+worth a little more discussion:</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+Connecting: the <literal>Couchbase.connect</literal> basically creates an instance of
+  <literal>Couchbase::Bucket</literal> class internally passing all arguments to its
+  contructor. You can see complete list of options on the
+  <ulink url="http://rdoc.info/gems/couchbase/Couchbase/Bucket#initialize-instance_method">API documentation site</ulink>.
+  In our example the most interesting option is <literal>:bucket</literal>. Because our
+  data bucket isn&#8217;t "default" we must specify it during connection.
+  The bucket is the container for all your documents. Inside a bucket,
+  a key&#8201;&#8212;&#8201;the identifier for a document&#8201;&#8212;&#8201;must be unique. In
+  production environments, it is recommended to use a password on a
+  bucket (this can be configured during bucket creation), but when you
+  are just starting out using the default bucket without a password is
+  fine. Note that the <literal>beer-sample</literal> bucket also doesn&#8217;t have a password,
+  so just change the bucket name and you&#8217;re set. Another option is
+  <literal>:host</literal> which tells the client library the address of the cluster. While
+  passing in only one host is fine, it is strongly recommended to add
+  two or three (of course, if your cluster has more than one node) and
+  use <literal>:node_list</literal> option instead. It is important to understand that
+  this list does not have to contain all nodes in the cluster&#8201;&#8212;&#8201;you
+  just need to provide a few so that during the initial bootstrap
+  phase the Client is able to connect to the server.  Any two or three
+  nodes will be fine, but maintain this list.  After this has
+  happened, the Client automatically fetches the cluster configuration
+  and keeps it up to date, even when the cluster topology changes.
+  This means that you don&#8217;t need to change your application config at
+  all when you resize your cluster.
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+Set and get: these two operations are the most fundamental
+  ones. You can use set to create or completely replace a document inside your
+  bucket and get to read it back afterwards. There are lots of
+  arguments and variations, but if you just use them as shown in the
+  previous example will get you pretty far. The sample is using the
+  <literal>Couchbase::Bucket#replace</literal> operation. It behaves exactly like
+  <literal>#set</literal> but will raise an error if the document isn&#8217;t in the
+  bucket. Note that by default all operations are using JSON to store
+  your documents, so make sure it is possible to represent your values
+  in this format. If not, you might use <literal>:marshal</literal> format. Find more
+  info about the formats in the API documentation.
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+Disconnecting: at the end of the program (or when you shutdown your
+  server instance), you should use the <literal>Couchbase::Bucket#disconnect</literal>
+  method. But you should know that the instance will be disconnected
+  properly if it is destroyed by garbage collector.
+</simpara>
+</listitem>
+</itemizedlist>
+<simpara>That&#8217;s it. We&#8217;re ready to run our first Couchbase program.</simpara>
+<screen>shell&gt; ruby hello.rb
+Juleøl, ABV: 5.9</screen>
+</section>
+</section>
+<section id="_working_with_documents">
+<title>Working with Documents</title>
+<simpara>A document in Couchbase Server consists of a value and meta
+information, like a unique key, a CAS value, flags etc.  These are all stored in a bucket.
+A document can be anything, but it is recommended to use the JSON
+format. JSON is very convenient for storing structured data with
+little overhead, and is also used inside the View engine. This means
+that if you want to get most out of Couchbase Server 2.0, use JSON.</simpara>
+<simpara>The couchbase client will use any of accessible JSON libraries
+supported by <ulink url="https://rubygems.org/gems/multi_json">multi_json gem</ulink>.
+This mean if your values are serializable with <literal>MultiJson.dump</literal>, you
+can pass them to mutator methods and be sure you will get them later in
+the same form.</simpara>
+<simpara>The following chapter introduces the basic operations that you can use
+as the fundamental building blocks of your application.</simpara>
+<simpara>Here&#8217;s a quick outline of what you&#8217;ll learn in this chapter:</simpara>
+<orderedlist numeration="arabic">
+<listitem>
+<simpara>
+Write a program to demonstrate using Create, Read, Update, Delete
+  (CRUD) operations on documents.
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+Explore some of the API methods that will take you further than what
+  you&#8217;ve seen previously.
+</simpara>
+</listitem>
+</orderedlist>
+<section id="_creating_and_updating_documents">
+<title>Creating and Updating Documents</title>
+<simpara>Couchbase Server provides a set of commands to store documents. The
+commands are very similar to each other and differ only in their
+meaning on the server-side. These are:</simpara>
+<informaltable tabstyle="horizontal" frame="none" colsep="0" rowsep="0"><tgroup cols="2"><colspec colwidth="15*"/><colspec colwidth="85*"/><tbody valign="top">
+<row>
+<entry>
+<simpara>
+<literal>set</literal>
+</simpara>
+</entry>
+<entry>
+<simpara>
+Stores a document in Couchbase Server (identified by its unique
+        key) and overrides the previous document (if there was one).
+</simpara>
+</entry>
+</row>
+<row>
+<entry>
+<simpara>
+<literal>add</literal>
+</simpara>
+</entry>
+<entry>
+<simpara>
+Adds a document in Couchbase Server (identified by its unique
+        key) and fails if there is already a document with the same
+        key stored.
+</simpara>
+</entry>
+</row>
+<row>
+<entry>
+<simpara>
+<literal>replace</literal>
+</simpara>
+</entry>
+<entry>
+<simpara>
+Replaces a document in Couchbase Server (identified by its
+            unique key) and fails if there is no document with the
+            given key already in place.
+</simpara>
+</entry>
+</row>
+</tbody></tgroup></informaltable>
+<simpara>There are also additional commands mutation commands, which do make
+sense when you are working in <literal>:plain</literal> mode, because they are
+implmented on the server and not JSON-aware. But still they might be
+useful in your application:</simpara>
+<informaltable tabstyle="horizontal" frame="none" colsep="0" rowsep="0"><tgroup cols="2"><colspec colwidth="15*"/><colspec colwidth="85*"/><tbody valign="top">
+<row>
+<entry>
+<simpara>
+<literal>prepend</literal>
+</simpara>
+</entry>
+<entry>
+<simpara>
+Prepend given string to the value. The concatenation is
+            done on the server side.
+</simpara>
+</entry>
+</row>
+<row>
+<entry>
+<simpara>
+<literal>append</literal>
+</simpara>
+</entry>
+<entry>
+<simpara>
+Append given string to the value. The concatenation is
+           also done on the server side.
+</simpara>
+</entry>
+</row>
+<row>
+<entry>
+<simpara>
+<literal>increment</literal>
+</simpara>
+</entry>
+<entry>
+<simpara>
+Increment, atomically, the value. The value is a string
+              representation of an unsigned integer. The new value is
+              returned by the operation. By default it
+              will increment by one. See API reference for other options.
+</simpara>
+</entry>
+</row>
+<row>
+<entry>
+<simpara>
+<literal>decrement</literal>
+</simpara>
+</entry>
+<entry>
+<simpara>
+Decrement, atomically, the value. The value is a string
+              representation of an unsigned integer. The new value is
+              returned by the operation. By default it
+              will decrement by one. See API reference for other options.
+</simpara>
+</entry>
+</row>
+</tbody></tgroup></informaltable>
+<simpara>The SDK provides several options for these operations, but to start
+out here are the simplest forms:</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">key = "aass_brewery-juleol"
+doc = {"name" =&gt; "Juleøl", "abv" =&gt; 5.9}
+
+client.add(key, doc);
+client.set(key, doc);
+client.replace(key, doc);</programlisting>
+</section>
+<section id="_reading_documents">
+<title>Reading Documents</title>
+<simpara>With Couchbase Server 2.0, you have two ways of fetching your
+documents: either by the unique key through the get method, or through
+Views. Since Views are more complex, let&#8217;s just look at a simple get first:</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">doc = client.get("aass_brewery-juleol")
+
+keys = ["foo", "bar"]
+docs = client.get(keys, :quiet =&gt; true)</programlisting>
+<simpara>In this case you will receve the Hash document you stored earlier. If
+there no such key in the bucket, the exception
+<literal>Couchbase::Error:NotFound</literal> will be raised. But you can suppress all
+<literal>NotFound</literal> errors by using option <literal>:quiet =&gt; true</literal> and the method will
+return <literal>nil</literal> instead. The <literal>Couchbase::Bucket#get</literal> method can also
+accept list of keys returning list of documents.</simpara>
+<simpara>With Couchbase Server 2.0, the very powerful ability to query your
+documents across this distributed system through secondary indexes (Views) has been added to your
+toolbelt. This guide gets you started on how to use them through the
+Ruby SDK, if you want to learn more please refer to
+<ulink url="http://www.couchbase.com/docs/couchbase-manual-2.0/couchbase-views.html">the
+chapter in the Couchbase Server 2.0 documentation</ulink>.</simpara>
+<simpara>Once you created your View in the UI, you can query it from the SDK in
+two steps. First, you grab the design document definition from the
+cluster, second query view with options you need and use results.
+In its simplest form, it looks like this:</simpara>
+<programlisting language="ruby" linenumbering="unnumbered"># 1: Get the design document definition
+ddoc = client.design_docs["beer"]
+ddoc.views      #=&gt; ["brewery_beers", "by_location"]
+
+# 2: Query the view and use results
+ddoc.brewery_beers.each do |row|
+  puts row.key
+  puts row.value
+  puts row.id
+  puts row.doc
+end</programlisting>
+<simpara>Note that the view request won&#8217;t be executed until you will try to
+access the results. This means that you can pass view object
+(<literal>ddoc.brewery_beers</literal> here) without executing it.</simpara>
+<simpara>Views can be queried with a large amount of options to change what the
+results of the query will contain. All supported
+options are available as items in options Hash accepted either by the
+view method or by <literal>#each</literal> iterator on the view. Here are some of them:</simpara>
+<informaltable tabstyle="horizontal" frame="none" colsep="0" rowsep="0"><tgroup cols="2"><colspec colwidth="15*"/><colspec colwidth="85*"/><tbody valign="top">
+<row>
+<entry>
+<simpara>
+include_docs (Boolean)
+</simpara>
+</entry>
+<entry>
+<simpara>
+Used to define if the complete documents
+                         should be fetched with the result (<literal>false</literal>
+                         by default).  Note this will actually fetch
+                         the document itself from the cache, so if it
+                         has been changed or deleted you may not
+                         receive a document that matches the view, or
+                         any at all.
+</simpara>
+</entry>
+</row>
+<row>
+<entry>
+<simpara>
+reduce (Boolean)
+</simpara>
+</entry>
+<entry>
+<simpara>
+Used to enable/disable the reduce function (if
+                   there is one defined on the server). <literal>true</literal> by
+                   default.
+</simpara>
+</entry>
+</row>
+<row>
+<entry>
+<simpara>
+limit (Fixnum)
+</simpara>
+</entry>
+<entry>
+<simpara>
+Limit the number of results that should be returned.
+</simpara>
+</entry>
+</row>
+<row>
+<entry>
+<simpara>
+descending (Boolean)
+</simpara>
+</entry>
+<entry>
+<simpara>
+Revert the sorting order of the result set.
+                       (<literal>false</literal> by default)
+</simpara>
+</entry>
+</row>
+<row>
+<entry>
+<simpara>
+stale (Boolean, Symbol)
+</simpara>
+</entry>
+<entry>
+<simpara>
+Can be used to define the tradeoff between
+                          performance and freshness of the data.
+                           (<literal>:update_after</literal> by default)
+</simpara>
+</entry>
+</row>
+</tbody></tgroup></informaltable>
+<simpara>Now that we have our View information in place, we can issue the
+query, which actually triggers the scatter-gather data loading process
+on the Cluster. We can use it to iterate over the results and print
+out some details (here is a more complete example which also includes
+the full documents and only fetches the first five results). The
+resulting information is encapsulated inside the <literal>ViewRow</literal> object.</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">view = client.design_docs["beer"].brewery_beers
+
+# Include all docs and limit to 5
+view.each(:include_docs =&gt; true, :limit =&gt; 5) do |row|
+  puts row.id
+  # The full document (as a Hash) is available through row.doc
+end</programlisting>
+<simpara>In the logs, you can see the corresponding document keys automatically sorted (ascending):</simpara>
+<screen>21st_amendment_brewery_cafe
+21st_amendment_brewery_cafe-21a_ipa
+21st_amendment_brewery_cafe-563_stout
+21st_amendment_brewery_cafe-amendment_pale_ale
+21st_amendment_brewery_cafe-bitter_american</screen>
+</section>
+<section id="_deleting_documents">
+<title>Deleting Documents</title>
+<simpara>If you want to get rid of a document, you can use the delete operation:</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">client.delete("aass_brewery-juleol");</programlisting>
+</section>
+</section>
+<section id="_advanced_topics">
+<title>Advanced Topics</title>
+<simpara>This chapter introduces some techniques topics that you can use to
+further extend your Couchbase vocabulary.</simpara>
+<section id="_cas_and_locking">
+<title>CAS and Locking</title>
+<simpara>If you need to coordinate shared access on documents, Couchbase helps
+you with two approaches. Depending on the application you may need to
+use both of them, but in general it is better (if feasible) to lean
+towards CAS because it provides the better performance
+characteristics.</simpara>
+<formalpara><title>Optimistic Locking</title><para>Each document has a unique identifier associated with it (the CAS
+value), which changes when the document itself is mutated. You can
+fetch the CAS value for a given key and pass it to any mutator
+operation to protect it. The update will only succeed, when the CAS
+value is still the same. This is why it&#8217;s called optimistic locking.
+Someone else can still read and try to update the document, but it
+will fail once the CAS value has changed. Here is a example on how to
+do it with the Ruby SDK:</para></formalpara>
+<programlisting language="ruby" linenumbering="unnumbered">key = "eagle_brewing-golden"
+# Reads the document with the CAS value.
+beer, flags, cas = client.get(key, :extended =&gt; true)
+
+# Updates the document and tries to store it back.
+beer["name"] = "Some other Name"
+client.set(key, beer, :cas =&gt; cas, :flags =&gt; flags)</programlisting>
+<simpara>Note that this also means that all your application need to follow the
+same code path (cooperative locking). If you use <literal>#set</literal> somewhere else
+in the code on the same document, it will work even if the CAS itself
+is out of date (that&#8217;s because the normal <literal>#set</literal> method doesn&#8217;t care
+about those values at all). Of course, the CAS itself changes then and
+the mutation operation would fail afterwards.</simpara>
+<simpara>There is also shortcut operation for doing optimistic locking
+<literal>Bucket#cas</literal>. Internally it does the same thing but abstract you from
+storing and passing meta information. Here is the previous example
+rewritten to use this operation:</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">key = "eagle_brewing-golden"
+client.cas(key) do |beer|
+  beer["name"] = "Some other Name"
+  # return new value from block
+  beer
+end</programlisting>
+<simpara>Note that you should return new value from the block. If you will skip
+it, it will use <literal>"Some other Name"</literal> as new value.</simpara>
+<formalpara><title>Pessimistic Locking</title><para>If you want to lock a document completely (or an object graph), you
+can use the <literal>Bucket#get</literal> operation with <literal>:lock</literal> option. The option
+accepts either boolean (where truth does make sense really) or Fixnum
+meaning the time period where the lock is valid. The server will
+release lock after the that period (or maximum value, which configured
+on the server). Other threads can still run <literal>get</literal> queries queries
+against the document, but mutation operations without a CAS will fail.</para></formalpara>
+<simpara>You can determine actual default and maximum values calling
+<literal>Bucket#stats</literal> without arguments and inspecting keys
+<literal>"ep_getl_default_timeout"</literal> and <literal>"ep_getl_max_timeout"</literal>
+correspondingly.</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">key = "eagle_brewing-golden";
+
+# Get with Lock
+beer, flags, cas = client.get(key, :lock =&gt; true, :extended =&gt; true);
+
+# Update the document
+beer["name"] = "Some other Name"
+
+# Try to set without the lock
+client.set(key, beer, :flags =&gt; flags)
+#=&gt; will raise Couchbase::Error::KeyExists
+
+# Try to set with the CAS aquired, will be OK
+client.set(key, beer, :flags =&gt; flags, :cas =&gt; cas)</programlisting>
+<simpara>Once you update the document, the lock will be released. There is also
+the <literal>Bucket#unlock</literal> method available through which you can unlock the
+document.</simpara>
+</section>
+<section id="_persistence_and_replication">
+<title>Persistence and Replication</title>
+<simpara>By default, the mutation operations return when Couchbase Server has
+accepted the command and stored it in memory (disk persistence and
+replication is handled asynchronously by the cluster). That&#8217;s one of
+the reason why it&#8217;s so fast. For most use-cases, that&#8217;s the behavior
+that you need. Sometimes though, you want to trade in performance for
+data-safety and wait until the document has been saved to disk and/or
+replicated to other hosts.</simpara>
+<simpara>The Ruby SDK provides <literal>:observe</literal> option for all mutation operations.
+You can claim various persistence conditions using this option.
+Basically its argument is a Hash with three possible keys, describing
+the condition when the mutator will yield the result:</simpara>
+<orderedlist numeration="arabic">
+<listitem>
+<simpara>
+<literal>:replicated</literal> (Fixnum) describe how many nodes should receive
+replicated copy of the document.
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<literal>:persisted</literal> (Fixnum) describe how many nodes should persist the
+document to the disk. The nodes include master node, where the key
+resides and all replica nodes.
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+<literal>:timeout</literal> (Fixnum) the timeout period in microseconds. After
+passing, the operation condition will be considered timed out and
+appropriate exception will be thrown. Default value could be addressed
+using <literal>Bucket#default_observe_timeout</literal>.
+</simpara>
+</listitem>
+</orderedlist>
+<simpara>Here is an example on how to make sure that the document has been
+persisted on its master node, but also replicated to at least one of
+its replicas.</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">key = "important"
+value = "document"
+client.set(key, value, :observe =&gt; {:persisted =&gt; 1, :replicated =&gt; 1})</programlisting>
+<simpara>You can also separate persistence requirement from actual operations,
+and in this case, you can wait for several keys:</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">keys = []
+(1..5).each do |nn|
+  key = "important-#{nn}"
+  keys &lt;&lt; key
+  client.set(key, "document-#{nn}")
+end
+client.observe_and_wait(keys, :persisted =&gt; 1, :replicated =&gt; 1)</programlisting>
+</section>
+</section>
+<section id="_couchbase_rails_tutorial">
+<title>Couchbase Rails Tutorial</title>
+<simpara>The goal of this chapter is to show how to write more advanced
+application using Couchbase and Rails framework.</simpara>
+<simpara>We assume here that you are passed "Getting Started" section already,
+if not, we recommend to take a look, because it describes how to
+install and verify Ruby SDK.</simpara>
+<section id="_tl_dr">
+<title>TL;DR</title>
+<simpara>For the purposes of this tutorial, we have specially prepared an
+example application for you to follow along with. The application
+uses a bucket with one of the sample datasets which come with Couchbase
+Server itself: <literal>beer-sample</literal>. If you haven&#8217;t already, download the
+latest Couchbase Server 2.0 release and install it. While following
+the download instructions and setup wizard, make sure you install the
+<literal>beer-sample</literal> default bucket. It contains a sample data set of beers and
+breweries, which we&#8217;ll use in our examples here. If you&#8217;ve
+already installed Couchbase Server 2.0 and didn&#8217;t install the
+<literal>beer-sample</literal> bucket (or if you deleted it), just open the Web-UI and
+navigate to "Settings/Sample Buckets".  Select the <literal>beer-sample</literal>
+checkbox and click "Create". In the right hand corner you&#8217;ll see a
+notification box that will disappear once the bucket is ready to be
+used.</simpara>
+<simpara>After that you can clone the complete repository from couchbaselabs on github:</simpara>
+<screen>shell&gt; git clone git://github.com/couchbaselabs/couchbase-beer.rb.git
+Cloning into 'couchbase-beer.rb'...
+remote: Counting objects: 409, done.
+remote: Compressing objects: 100% (254/254), done.
+remote: Total 409 (delta 183), reused 340 (delta 114)
+Receiving objects: 100% (409/409), 235.17 KiB | 130 KiB/s, done.
+Resolving deltas: 100% (183/183), done.</screen>
+<simpara>Navigate to the directory and install all application dependencies:</simpara>
+<screen>shell&gt; cd couchbase-beer.rb/
+shell&gt; bundle install
+...snip...
+Your bundle is complete! Use `bundle show [gemname]` to see where a bundled gem is installed.</screen>
+<simpara>That&#8217;s it. Assuming that the server with <literal>beer-sample</literal> bucket is up
+and running on localhost, you can just start ruby web server:</simpara>
+<screen>shell&gt; rails server
+=&gt; Booting Thin
+=&gt; Rails 3.2.8 application starting in development on http://0.0.0.0:3000
+=&gt; Call with -d to detach
+=&gt; Ctrl-C to shutdown server
+&gt;&gt; Thin web server (v1.5.0 codename Knife)
+&gt;&gt; Maximum connections set to 1024
+&gt;&gt; Listening on 0.0.0.0:3000, CTRL+C to stop</screen>
+<simpara>Then navigate to <ulink url="http://localhost:3000/">http://localhost:3000/</ulink>. You should see something like that:</simpara>
+<informalfigure>
+<mediaobject>
+  <imageobject>
+  <imagedata fileref="image/couchbase-beer.rb-home.png"/>
+  </imageobject>
+  <textobject><phrase>image/couchbase-beer.rb-home.png</phrase></textobject>
+</mediaobject>
+</informalfigure>
+</section>
+<section id="_create_application_skeleton">
+<title>Create Application Skeleton</title>
+<simpara>If you would like to learn how to create this application from scratch
+just continue reading. As with any rails application we will use
+generators a lot. Since we don&#8217;t need ActiveRecord we&#8217;ll let
+<literal>rails new</literal> know about it.</simpara>
+<screen>shell&gt; rails new couchbase-beer.rb -O --old-style-hash</screen>
+<simpara>Now navigate to the project root and open up <literal>Gemfile</literal> in your
+favorite editor. First, we need to add the Couchbase client libraries there:</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">gem 'couchbase'
+gem 'couchbase-model'</programlisting>
+<simpara>Skipping the version will get the latest stable versions of those gems. We
+will use the <ulink url="https://rubygems.org/gems/couchbase-model">couchbase-model</ulink>
+gem to define our models in a declarative way much like all rails developers
+describe their models with ActiveRecord. Apart from that we
+will use <literal>yajl-ruby</literal>, a high-performance JSON parser/generator,
+<literal>rdiscount</literal> to render descriptions as Markdown, and <literal>omniauth-twitter</literal>
+for authentication.</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">gem 'yajl-ruby'
+gem 'rdiscount'
+gem 'omniauth-twitter'</programlisting>
+<simpara>The complete <literal>Gemfile</literal> will looks like this:</simpara>
+<formalpara><title>Gemfile</title><para>
+<programlisting language="ruby" linenumbering="unnumbered">source 'https://rubygems.org'
+
+gem 'rails', '3.2.8'
+
+gem "eventmachine", "~&gt; 1.0.0"
+gem 'thin', "~&gt; 1.5.0"
+gem 'jquery-rails'
+gem 'yajl-ruby'
+gem 'couchbase'
+gem 'couchbase-model'
+gem 'rdiscount'
+gem 'omniauth'
+gem 'omniauth-twitter'
+
+gem 'capistrano'
+
+group :development, :test do
+  gem 'debugger'
+end
+
+group :assets do
+  gem 'sass-rails', '~&gt; 3.2.3'
+  gem 'uglifier', '&gt;= 1.0.3'
+end</programlisting>
+</para></formalpara>
+<simpara>Next step will be to configure Couchbase connection, this step should
+be familiar to the rails developer, because <literal>couchbase-model</literal> brings
+YAML-styled configuration, so if you know how
+<literal>config/database.yml</literal> works, you can make some assumtions about how
+<literal>config/couchbase.yml</literal> works. To generate a config, use the <literal>couchbase:config</literal>
+generator:</simpara>
+<screen>shell&gt; rails generate couchbase:config
+      create  config/couchbase.yml</screen>
+<simpara>Since our bucket name differs from the project name, you should update
+the <literal>bucket</literal> property in the config. Also if your Couchbase Server is
+not running on the local machine, you should also change the hostname
+in the config. After you&#8217;ve made your modifications, your config should look like this:</simpara>
+<formalpara><title>config/couchbase.yml</title><para>
+<screen>common: &amp;common
+  hostname: localhost
+  port: 8091
+  username:
+  password:
+  pool: default
+
+development:
+  &lt;&lt;: *common
+  bucket: beer-sample
+
+production:
+  &lt;&lt;: *common
+  bucket: beer-sample</screen>
+</para></formalpara>
+<simpara>That&#8217;s it for configuration, let&#8217;s move forward and create some
+models.</simpara>
+</section>
+<section id="_define_models">
+<title>Define Models</title>
+<simpara>To create a model, all you need is just define class and inherit from
+<literal>Couchbase::Model</literal>. Lets dissect the <literal>Brewery</literal> model from the application.</simpara>
+<formalpara><title>app/models/brewery.rb</title><para>
+<programlisting language="ruby" linenumbering="unnumbered">class Brewery &lt; Couchbase::Model
+  attribute :name, :description
+  attribute :country, :state, :city, :address
+  attribute :phone
+  attribute :geo
+  attribute :updated
+
+  view :all, :limit =&gt; 31
+  view :all_with_beers
+  view :by_country, :include_docs =&gt; false, :group =&gt; true
+  view :points, :spatial =&gt; true
+
+  def full_address
+    [country, state, city, address].reject(&amp;:blank?).join(', ')
+  end
+
+  def location
+    [country, state].reject(&amp;:blank?).join(', ')
+  end
+end</programlisting>
+</para></formalpara>
+<simpara>The first part of the model contains attribute definitions.  The <literal>attribute</literal>
+macro defines a pair of accessors and helps to maintain map of
+attributes-values. You can also specify default a value for each
+attribute:</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">class Post &lt; Couchbase::Model
+  attribute :title, :body
+  attribute :timestamp, :default =&gt; lambda{ Time.now }
+end
+
+Post.new(:title =&gt; "Hello, World!")
+#=&gt; #&lt;Post timestamp: 2012-12-07 16:03:56 +0300, title: "Hello, World!"&gt;</programlisting>
+<simpara>The next block is about defining views. One way to play with views is
+Couchbase Server Admin Console, but it may not be the best to keep parts
+of the code in different places. After all Views are implemented in
+Javascript and carry part of business logic. <literal>couchbase-model</literal> has
+solution for it. Each time the server starts (in development mode
+for each request), the application will check the filesystem changes
+of the map/reduce javascript files and update design document if
+needed. There is also the rails generator for views. It will put
+view stubs for you in proper places. Here, for example, is the model layout for
+this particular application:</simpara>
+<screen>app/models/
+├── beer
+│   ├── all
+│   │   └── map.js
+│   └── by_category
+│       ├── map.js
+│       └── reduce.js
+├── beer.rb
+├── brewery
+│   ├── all
+│   │   └── map.js
+│   ├── all_with_beers
+│   │   └── map.js
+│   ├── by_country
+│   │   ├── map.js
+│   │   └── reduce.js
+│   └── points
+│       └── spatial.js
+├── brewery.rb
+├── favorites.rb
+└── user.rb</screen>
+<simpara>For each model which has views,
+you should create a directory with the same name and put in the appropriate
+javascript files. Each should implement the corresponding parts of
+the view. For example <literal>_design/brewery/_view/by_country</literal> does require both
+map and reduce parts. To generate a new view you should pass model name
+and view name you need to get:</simpara>
+<screen>shell&gt; rails generate couchbase:view beer test
+      create  app/models/beer/test/map.js
+      create  app/models/beer/test/reduce.js</screen>
+<simpara>Those automatically generated files are full of comments, so they
+are worth reading as quick start about how to write View indexes.  The offical
+documentation for how to do so is in the Couchbase Server manual.</simpara>
+</section>
+<section id="_implement_controllers">
+<title>Implement Controllers</title>
+<simpara>Now lets dissect the controllers from the project. This is where data is
+selected to display to user. For example <literal>BreweriesController</literal>:</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">class BreweriesController &lt; ApplicationController
+  def index
+    filter = params.extract!(:start_key, :end_key).reject{|_, v| v.blank?}
+    @breweries = Brewery.all(filter).to_a
+    if @breweries.size &gt; 30
+      @last_key = @breweries.pop.try(:key)
+    end
+    respond_to do |format|
+      format.html
+      format.json do
+        render :json =&gt; {:last_key =&gt; @last_key, :items =&gt; @breweries}
+      end
+    end
+  end
+
+  def show
+    @brewery, *@beers = Brewery.all_with_beers(:start_key =&gt; [params[:id]],
+                                               :end_key =&gt; ["#{params[:id]}\uefff"]).to_a
+  end
+end</programlisting>
+<simpara>It has two actions:</simpara>
+<orderedlist numeration="arabic">
+<listitem>
+<simpara>
+"index" which is supposed to pull the list of breweries. It might look
+  complex, but it isn&#8217;t. In first line we are preparing query
+  parameters for views. In particular, we are interested in the <literal>start_key</literal>
+  and <literal>end_key</literal> parameters, but we need them only if they aren&#8217;t blank
+  (i.e. not nil and not empty string). The second step is to execute
+  the view and get results immediately. Your application might want to
+  fetch the entries from view on demand in a lazy manner, then you no
+  need to call the <literal>#to_a</literal> method and iterate over them or call methods
+  like <literal>#next</literal>. In this particular example we are fetching 31 records
+  and are trying to pop last one to use it later for "infinite"
+  scrolling. The end of the method is responsible for rendering
+  the data in two formats, by default it will use HTML, but if the application is responding to
+  an AJAX request with the <literal>Accept: application/json</literal> header, it will instead
+  render the JSON representation of our models.
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+"show" uses another view from the <literal>Brewery</literal> model, which
+  collates breweries with beer for easier access. Here is a map function
+  which does that job:
+</simpara>
+<screen>function(doc, meta) {
+  switch(doc.type) {
+  case "brewery":
+    emit([meta.id]);
+    break;
+  case "beer":
+    if (doc.brewery_id &amp;&amp; doc.name) {
+      emit([doc.brewery_id, doc.name]);
+    }
+    break;
+  }
+}</screen>
+<simpara>As you can see we are using a compound key with brewery ID in the
+first position and the document name in the second position. Because we are selecting
+only beers without null names, they will be sorted after the
+breweries. By doing so, when we filter result by the first key only, the
+<literal>@brewery</literal> variable will receive first element of the sequence, and
+<literal>@beers</literal> will get the rest of the collection because of the splat (<literal>*</literal>)
+operator.</simpara>
+</listitem>
+</orderedlist>
+</section>
+<section id="_bonus_spatial_queries_sessions_and_cache">
+<title>Bonus: Spatial Queries, Sessions and Cache</title>
+<simpara>One of the experimental features of the Couchbase Server is spatial
+views. These kind of views allow you to build indexes on geo
+attributes of your data. Sample application has part, demostrating
+power of spatial views. Click on the "Map" link in the menu, and if
+you allowed your browser to fetch your current location it will
+position the center of the map to your, or to Mountain View otherwise.
+After that it will execute spatial query using map bounds and the
+Couchbase Server will give you all the breweries which are nearby.
+Lets take a look at the implemetation. The core of this feature in
+<literal>brewery/points/spatial.js</literal>:</simpara>
+<screen>function(doc, meta) {
+  if (doc.geo &amp;&amp; doc.geo.lng &amp;&amp; doc.geo.lat &amp;&amp; doc.name) {
+    emit({type: "Point", coordinates: [doc.geo.lng, doc.geo.lat]},
+         {name: doc.name, geo: doc.geo});
+  }
+}</screen>
+<simpara>The function will emit Point object and the name with coordinates as
+the payload. The action in the controller is quite trivial, it
+transmit the result to the frontend in JSON representation, where
+google maps is rendering markers for each object.</simpara>
+<simpara>Except nice extensions, provided by <literal>couchbase-model</literal> library,
+<literal>couchase</literal> gem itself has few more nice features which could be useful
+in the web application. For example, you can easily substitute your
+session or cache store in rails (or even in rack) with Couchbase
+Server.</simpara>
+<simpara>To use Couchbase as cache store in rails, just put following line in
+your <literal>config/application.rb</literal> file:</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">config.cache_store = :couchbase_store</programlisting>
+<simpara>You can also pass additional connection options there</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">cache_options = {
+  :bucket =&gt; 'protected',
+  :username =&gt; 'protected',
+  :password =&gt; 'secret',
+  :expires_in =&gt; 30.seconds
+}
+config.cache_store = :couchbase_store, cache_options</programlisting>
+<simpara>To use Couchbase as the session store you should update your
+<literal>config/initializers/session_store.rb</literal> file</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">require 'action_dispatch/middleware/session/couchbase_store'
+AppName::Application.config.session_store :couchbase_store</programlisting>
+<simpara>Or remove this file and add following line to your <literal>config/application.rb</literal>:</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">require 'action_dispatch/middleware/session/couchbase_store'
+config.session_store :couchbase_store</programlisting>
+<simpara>You can also pass additional options:</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">require 'action_dispatch/middleware/session/couchbase_store'
+session_options = {
+  :expire_after =&gt; 5.minutes,
+  :couchbase =&gt; {:bucket =&gt; "sessions", :default_format =&gt; :json}
+}
+config.session_store :couchbase_store, session_options</programlisting>
+<simpara>In the example above we are specifying format as JSON which allows us
+to share sessions in heterogenous environment, and also analyze them
+using Map/Reduce. But keep in the mind that not everything in typical
+rails application could be serialized to JSON, for example
+<literal>ActionDispatch::Flash::FlashHash</literal>. This is why the library serialize
+sessions using <literal>Marshal.dump</literal> by default.</simpara>
+</section>
+</section>
+</article>

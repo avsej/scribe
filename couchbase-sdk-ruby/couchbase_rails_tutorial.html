@@ -1,0 +1,405 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="master.css" type="text/css" />
+    <title>Couchbase Rails Tutorial</title>
+  </head>
+
+  <body>
+    <div class="nav" id="navheader">
+    <table width="100%">
+      <tr><td width="33%" align="left">
+        
+         <a href="advanced_topics.html">Prev</a><br/>
+         Advanced Topics
+        
+      </td><td width="33%" align="center">
+        
+         <a href="index.html">Home</a><br/>
+         <strong>Couchbase Ruby Client Manual</strong>
+        
+      </td><td width="33%" align="right">
+        
+      </td></tr>
+    </table>
+    </div>
+
+    <hr/>
+
+    <div class="content">
+      <div class="section" lang="en" xml:lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a id="_couchbase_rails_tutorial"></a>Couchbase Rails Tutorial</h2></div></div></div>
+<p>The goal of this chapter is to show how to write more advanced
+application using Couchbase and Rails framework.</p>
+<p>We assume here that you are passed "Getting Started" section already,
+if not, we recommend to take a look, because it describes how to
+install and verify Ruby SDK.</p>
+<div class="section" lang="en" xml:lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_tl_dr"></a>TL;DR</h3></div></div></div>
+<p>For the purposes of this tutorial, we have specially prepared an
+example application for you to follow along with. The application
+uses a bucket with one of the sample datasets which come with Couchbase
+Server itself: <code class="literal">beer-sample</code>. If you haven’t already, download the
+latest Couchbase Server 2.0 release and install it. While following
+the download instructions and setup wizard, make sure you install the
+<code class="literal">beer-sample</code> default bucket. It contains a sample data set of beers and
+breweries, which we’ll use in our examples here. If you’ve
+already installed Couchbase Server 2.0 and didn’t install the
+<code class="literal">beer-sample</code> bucket (or if you deleted it), just open the Web-UI and
+navigate to "Settings/Sample Buckets".  Select the <code class="literal">beer-sample</code>
+checkbox and click "Create". In the right hand corner you’ll see a
+notification box that will disappear once the bucket is ready to be
+used.</p>
+<p>After that you can clone the complete repository from couchbaselabs on github:</p>
+<pre class="screen">shell&gt; git clone git://github.com/couchbaselabs/couchbase-beer.rb.git
+Cloning into 'couchbase-beer.rb'...
+remote: Counting objects: 409, done.
+remote: Compressing objects: 100% (254/254), done.
+remote: Total 409 (delta 183), reused 340 (delta 114)
+Receiving objects: 100% (409/409), 235.17 KiB | 130 KiB/s, done.
+Resolving deltas: 100% (183/183), done.</pre>
+<p>Navigate to the directory and install all application dependencies:</p>
+<pre class="screen">shell&gt; cd couchbase-beer.rb/
+shell&gt; bundle install
+...snip...
+Your bundle is complete! Use `bundle show [gemname]` to see where a bundled gem is installed.</pre>
+<p>That’s it. Assuming that the server with <code class="literal">beer-sample</code> bucket is up
+and running on localhost, you can just start ruby web server:</p>
+<pre class="screen">shell&gt; rails server
+=&gt; Booting Thin
+=&gt; Rails 3.2.8 application starting in development on http://0.0.0.0:3000
+=&gt; Call with -d to detach
+=&gt; Ctrl-C to shutdown server
+&gt;&gt; Thin web server (v1.5.0 codename Knife)
+&gt;&gt; Maximum connections set to 1024
+&gt;&gt; Listening on 0.0.0.0:3000, CTRL+C to stop</pre>
+<p>Then navigate to <a class="ulink" href="http://localhost:3000/" target="_top">http://localhost:3000/</a>. You should see something like that:</p>
+<div class="informalfigure"><div class="mediaobject"><img src="image/couchbase-beer.rb-home.png" alt="image/couchbase-beer.rb-home.png"></div></div>
+</div>
+<div class="section" lang="en" xml:lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_create_application_skeleton"></a>Create Application Skeleton</h3></div></div></div>
+<p>If you would like to learn how to create this application from scratch
+just continue reading. As with any rails application we will use
+generators a lot. Since we don’t need ActiveRecord we’ll let
+<code class="literal">rails new</code> know about it.</p>
+<pre class="screen">shell&gt; rails new couchbase-beer.rb -O --old-style-hash</pre>
+<p>Now navigate to the project root and open up <code class="literal">Gemfile</code> in your
+favorite editor. First, we need to add the Couchbase client libraries there:</p>
+<pre class="programlisting">gem 'couchbase'
+gem 'couchbase-model'</pre>
+<p>Skipping the version will get the latest stable versions of those gems. We
+will use the <a class="ulink" href="https://rubygems.org/gems/couchbase-model" target="_top">couchbase-model</a>
+gem to define our models in a declarative way much like all rails developers
+describe their models with ActiveRecord. Apart from that we
+will use <code class="literal">yajl-ruby</code>, a high-performance JSON parser/generator,
+<code class="literal">rdiscount</code> to render descriptions as Markdown, and <code class="literal">omniauth-twitter</code>
+for authentication.</p>
+<pre class="programlisting">gem 'yajl-ruby'
+gem 'rdiscount'
+gem 'omniauth-twitter'</pre>
+<p>The complete <code class="literal">Gemfile</code> will looks like this:</p>
+<p><b>Gemfile. </b>
+</p>
+<pre class="programlisting">source 'https://rubygems.org'
+
+gem 'rails', '3.2.8'
+
+gem "eventmachine", "~&gt; 1.0.0"
+gem 'thin', "~&gt; 1.5.0"
+gem 'jquery-rails'
+gem 'yajl-ruby'
+gem 'couchbase'
+gem 'couchbase-model'
+gem 'rdiscount'
+gem 'omniauth'
+gem 'omniauth-twitter'
+
+gem 'capistrano'
+
+group :development, :test do
+  gem 'debugger'
+end
+
+group :assets do
+  gem 'sass-rails', '~&gt; 3.2.3'
+  gem 'uglifier', '&gt;= 1.0.3'
+end</pre>
+<p>
+</p>
+<p>Next step will be to configure Couchbase connection, this step should
+be familiar to the rails developer, because <code class="literal">couchbase-model</code> brings
+YAML-styled configuration, so if you know how
+<code class="literal">config/database.yml</code> works, you can make some assumtions about how
+<code class="literal">config/couchbase.yml</code> works. To generate a config, use the <code class="literal">couchbase:config</code>
+generator:</p>
+<pre class="screen">shell&gt; rails generate couchbase:config
+      create  config/couchbase.yml</pre>
+<p>Since our bucket name differs from the project name, you should update
+the <code class="literal">bucket</code> property in the config. Also if your Couchbase Server is
+not running on the local machine, you should also change the hostname
+in the config. After you’ve made your modifications, your config should look like this:</p>
+<p><b>config/couchbase.yml. </b>
+</p>
+<pre class="screen">common: &amp;common
+  hostname: localhost
+  port: 8091
+  username:
+  password:
+  pool: default
+
+development:
+  &lt;&lt;: *common
+  bucket: beer-sample
+
+production:
+  &lt;&lt;: *common
+  bucket: beer-sample</pre>
+<p>
+</p>
+<p>That’s it for configuration, let’s move forward and create some
+models.</p>
+</div>
+<div class="section" lang="en" xml:lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_define_models"></a>Define Models</h3></div></div></div>
+<p>To create a model, all you need is just define class and inherit from
+<code class="literal">Couchbase::Model</code>. Lets dissect the <code class="literal">Brewery</code> model from the application.</p>
+<p><b>app/models/brewery.rb. </b>
+</p>
+<pre class="programlisting">class Brewery &lt; Couchbase::Model
+  attribute :name, :description
+  attribute :country, :state, :city, :address
+  attribute :phone
+  attribute :geo
+  attribute :updated
+
+  view :all, :limit =&gt; 31
+  view :all_with_beers
+  view :by_country, :include_docs =&gt; false, :group =&gt; true
+  view :points, :spatial =&gt; true
+
+  def full_address
+    [country, state, city, address].reject(&amp;:blank?).join(', ')
+  end
+
+  def location
+    [country, state].reject(&amp;:blank?).join(', ')
+  end
+end</pre>
+<p>
+</p>
+<p>The first part of the model contains attribute definitions.  The <code class="literal">attribute</code>
+macro defines a pair of accessors and helps to maintain map of
+attributes-values. You can also specify default a value for each
+attribute:</p>
+<pre class="programlisting">class Post &lt; Couchbase::Model
+  attribute :title, :body
+  attribute :timestamp, :default =&gt; lambda{ Time.now }
+end
+
+Post.new(:title =&gt; "Hello, World!")
+#=&gt; #&lt;Post timestamp: 2012-12-07 16:03:56 +0300, title: "Hello, World!"&gt;</pre>
+<p>The next block is about defining views. One way to play with views is
+Couchbase Server Admin Console, but it may not be the best to keep parts
+of the code in different places. After all Views are implemented in
+Javascript and carry part of business logic. <code class="literal">couchbase-model</code> has
+solution for it. Each time the server starts (in development mode
+for each request), the application will check the filesystem changes
+of the map/reduce javascript files and update design document if
+needed. There is also the rails generator for views. It will put
+view stubs for you in proper places. Here, for example, is the model layout for
+this particular application:</p>
+<pre class="screen">app/models/
+├── beer
+│   ├── all
+│   │   └── map.js
+│   └── by_category
+│       ├── map.js
+│       └── reduce.js
+├── beer.rb
+├── brewery
+│   ├── all
+│   │   └── map.js
+│   ├── all_with_beers
+│   │   └── map.js
+│   ├── by_country
+│   │   ├── map.js
+│   │   └── reduce.js
+│   └── points
+│       └── spatial.js
+├── brewery.rb
+├── favorites.rb
+└── user.rb</pre>
+<p>For each model which has views,
+you should create a directory with the same name and put in the appropriate
+javascript files. Each should implement the corresponding parts of
+the view. For example <code class="literal">_design/brewery/_view/by_country</code> does require both
+map and reduce parts. To generate a new view you should pass model name
+and view name you need to get:</p>
+<pre class="screen">shell&gt; rails generate couchbase:view beer test
+      create  app/models/beer/test/map.js
+      create  app/models/beer/test/reduce.js</pre>
+<p>Those automatically generated files are full of comments, so they
+are worth reading as quick start about how to write View indexes.  The offical
+documentation for how to do so is in the Couchbase Server manual.</p>
+</div>
+<div class="section" lang="en" xml:lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_implement_controllers"></a>Implement Controllers</h3></div></div></div>
+<p>Now lets dissect the controllers from the project. This is where data is
+selected to display to user. For example <code class="literal">BreweriesController</code>:</p>
+<pre class="programlisting">class BreweriesController &lt; ApplicationController
+  def index
+    filter = params.extract!(:start_key, :end_key).reject{|_, v| v.blank?}
+    @breweries = Brewery.all(filter).to_a
+    if @breweries.size &gt; 30
+      @last_key = @breweries.pop.try(:key)
+    end
+    respond_to do |format|
+      format.html
+      format.json do
+        render :json =&gt; {:last_key =&gt; @last_key, :items =&gt; @breweries}
+      end
+    end
+  end
+
+  def show
+    @brewery, *@beers = Brewery.all_with_beers(:start_key =&gt; [params[:id]],
+                                               :end_key =&gt; ["#{params[:id]}\uefff"]).to_a
+  end
+end</pre>
+<p>It has two actions:</p>
+<div class="orderedlist"><ol type="1">
+<li>
+"index" which is supposed to pull the list of breweries. It might look
+  complex, but it isn’t. In first line we are preparing query
+  parameters for views. In particular, we are interested in the <code class="literal">start_key</code>
+  and <code class="literal">end_key</code> parameters, but we need them only if they aren’t blank
+  (i.e. not nil and not empty string). The second step is to execute
+  the view and get results immediately. Your application might want to
+  fetch the entries from view on demand in a lazy manner, then you no
+  need to call the <code class="literal">#to_a</code> method and iterate over them or call methods
+  like <code class="literal">#next</code>. In this particular example we are fetching 31 records
+  and are trying to pop last one to use it later for "infinite"
+  scrolling. The end of the method is responsible for rendering
+  the data in two formats, by default it will use HTML, but if the application is responding to
+  an AJAX request with the <code class="literal">Accept: application/json</code> header, it will instead
+  render the JSON representation of our models.
+</li>
+<li>
+<p>
+"show" uses another view from the <code class="literal">Brewery</code> model, which
+  collates breweries with beer for easier access. Here is a map function
+  which does that job:
+</p>
+<pre class="screen">function(doc, meta) {
+  switch(doc.type) {
+  case "brewery":
+    emit([meta.id]);
+    break;
+  case "beer":
+    if (doc.brewery_id &amp;&amp; doc.name) {
+      emit([doc.brewery_id, doc.name]);
+    }
+    break;
+  }
+}</pre>
+<p>As you can see we are using a compound key with brewery ID in the
+first position and the document name in the second position. Because we are selecting
+only beers without null names, they will be sorted after the
+breweries. By doing so, when we filter result by the first key only, the
+<code class="literal">@brewery</code> variable will receive first element of the sequence, and
+<code class="literal">@beers</code> will get the rest of the collection because of the splat (<code class="literal">*</code>)
+operator.</p>
+</li>
+</ol></div>
+</div>
+<div class="section" lang="en" xml:lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_bonus_spatial_queries_sessions_and_cache"></a>Bonus: Spatial Queries, Sessions and Cache</h3></div></div></div>
+<p>One of the experimental features of the Couchbase Server is spatial
+views. These kind of views allow you to build indexes on geo
+attributes of your data. Sample application has part, demostrating
+power of spatial views. Click on the "Map" link in the menu, and if
+you allowed your browser to fetch your current location it will
+position the center of the map to your, or to Mountain View otherwise.
+After that it will execute spatial query using map bounds and the
+Couchbase Server will give you all the breweries which are nearby.
+Lets take a look at the implemetation. The core of this feature in
+<code class="literal">brewery/points/spatial.js</code>:</p>
+<pre class="screen">function(doc, meta) {
+  if (doc.geo &amp;&amp; doc.geo.lng &amp;&amp; doc.geo.lat &amp;&amp; doc.name) {
+    emit({type: "Point", coordinates: [doc.geo.lng, doc.geo.lat]},
+         {name: doc.name, geo: doc.geo});
+  }
+}</pre>
+<p>The function will emit Point object and the name with coordinates as
+the payload. The action in the controller is quite trivial, it
+transmit the result to the frontend in JSON representation, where
+google maps is rendering markers for each object.</p>
+<p>Except nice extensions, provided by <code class="literal">couchbase-model</code> library,
+<code class="literal">couchase</code> gem itself has few more nice features which could be useful
+in the web application. For example, you can easily substitute your
+session or cache store in rails (or even in rack) with Couchbase
+Server.</p>
+<p>To use Couchbase as cache store in rails, just put following line in
+your <code class="literal">config/application.rb</code> file:</p>
+<pre class="programlisting">config.cache_store = :couchbase_store</pre>
+<p>You can also pass additional connection options there</p>
+<pre class="programlisting">cache_options = {
+  :bucket =&gt; 'protected',
+  :username =&gt; 'protected',
+  :password =&gt; 'secret',
+  :expires_in =&gt; 30.seconds
+}
+config.cache_store = :couchbase_store, cache_options</pre>
+<p>To use Couchbase as the session store you should update your
+<code class="literal">config/initializers/session_store.rb</code> file</p>
+<pre class="programlisting">require 'action_dispatch/middleware/session/couchbase_store'
+AppName::Application.config.session_store :couchbase_store</pre>
+<p>Or remove this file and add following line to your <code class="literal">config/application.rb</code>:</p>
+<pre class="programlisting">require 'action_dispatch/middleware/session/couchbase_store'
+config.session_store :couchbase_store</pre>
+<p>You can also pass additional options:</p>
+<pre class="programlisting">require 'action_dispatch/middleware/session/couchbase_store'
+session_options = {
+  :expire_after =&gt; 5.minutes,
+  :couchbase =&gt; {:bucket =&gt; "sessions", :default_format =&gt; :json}
+}
+config.session_store :couchbase_store, session_options</pre>
+<p>In the example above we are specifying format as JSON which allows us
+to share sessions in heterogenous environment, and also analyze them
+using Map/Reduce. But keep in the mind that not everything in typical
+rails application could be serialized to JSON, for example
+<code class="literal">ActionDispatch::Flash::FlashHash</code>. This is why the library serialize
+sessions using <code class="literal">Marshal.dump</code> by default.</p>
+</div>
+</div>
+
+    </div>
+
+    <hr/>
+
+    <div class="nav" id="navfooter">
+    <table width="100%">
+      <tr><td width="33%" align="left">
+        
+         <a href="advanced_topics.html">Prev</a><br/>
+         Advanced Topics
+        
+      </td><td width="33%" align="center">
+        
+         <a href="index.html">Home</a><br/>
+         Couchbase Ruby Client Manual
+        
+      </td><td width="33%" align="right">
+        
+      </td></tr>
+    </table>
+    </div>
+  </body>
+</html>

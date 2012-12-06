@@ -1,0 +1,282 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="master.css" type="text/css" />
+    <title>Getting Started</title>
+  </head>
+
+  <body>
+    <div class="nav" id="navheader">
+    <table width="100%">
+      <tr><td width="33%" align="left">
+        
+         <a href="index.html">Prev</a><br/>
+         Main
+        
+      </td><td width="33%" align="center">
+        
+         <a href="index.html">Home</a><br/>
+         <strong>Couchbase Ruby Client Manual</strong>
+        
+      </td><td width="33%" align="right">
+        
+          <a href="working_with_documents.html">Next</a><br/>
+          Working with Documents
+        
+      </td></tr>
+    </table>
+    </div>
+
+    <hr/>
+
+    <div class="content">
+      <div class="titlepage">
+<div>
+<div><h2 class="title">
+<a id="idp1279312"></a>Couchbase Ruby Client Manual</h2></div>
+<div><div class="author">
+<h3 class="author">
+<span class="firstname">Sergey</span> <span class="surname">Avseyev</span>
+</h3>
+<code class="email">&lt;<a class="email" href="mailto:sergey@couchbase.com">sergey@couchbase.com</a>&gt;</code>
+</div></div>
+</div>
+<hr>
+</div>
+<div class="abstract">
+<a id="_abstract"></a><p class="title"><b>Abstract</b></p>
+<p>This is the manual for 1.2 of the Couchbase Ruby client library, which
+is compatible with Couchbase Server 2.0.</p>
+<p>This manual provides a reference to the key features and best
+practices for using the Ruby Couchbase Client Library . The content
+constitutes a reference to the core API, not a complete guide to the
+entire API functionality.</p>
+<div class="table">
+<a id="idp4722976"></a><p class="title"><b>Table 1. Product Compatibility for Couchbase Ruby SDK</b></p>
+<div class="table-contents"><table summary="Product Compatibility for Couchbase Ruby SDK" border="1">
+<colgroup>
+<col>
+<col>
+<col>
+</colgroup>
+<thead><tr>
+<th align="left" valign="top"> Product              </th>
+<th align="left" valign="top"> Compatible </th>
+<th align="left" valign="top"> All Features</th>
+</tr></thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p>Couchbase Server 1.8</p></td>
+<td align="left" valign="top"><p>✓</p></td>
+<td align="left" valign="top"><p>✓</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p>Couchbase Server 2.0</p></td>
+<td align="left" valign="top"><p>✓</p></td>
+<td align="left" valign="top"><p>✓</p></td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<br class="table-break"><div class="itemizedlist">
+<p class="title"><b>External Community Resources</b></p>
+<ul type="disc">
+<li>
+<a class="ulink" href="http://www.couchbase.com/develope/ruby/next" target="_top">Home page on couchbase.com</a>
+</li>
+<li>
+<a class="ulink" href="https://rubygems.org/gems/couchbase" target="_top">Download client library</a>
+</li>
+<li>
+<a class="ulink" href="http://rubydoc.info/gems/couchbase" target="_top">RDoc</a>
+</li>
+<li>
+<a class="ulink" href="http://www.couchbase.com/forums/sdks/sdks" target="_top">SDK forum</a>
+</li>
+<li>
+<a class="ulink" href="http://couchbase.com/issues/browse/RCBC" target="_top">Issue tracker</a>
+</li>
+<li>
+<a class="ulink" href="https://github.com/couchbase/couchbase-ruby-client" target="_top">Sourse code repository</a>
+</li>
+</ul>
+</div>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p>The following document is still in production, and is not
+         considered complete or exhaustive.</p>
+</div>
+</div>
+<div class="section" lang="en" xml:lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a id="_getting_started"></a>Getting Started</h2></div></div></div>
+<p>Awesome that you want to learn more about Couchbase! This is the right
+place to start your journey. This chapter will teach you the basics of
+Couchbase and how to interact with it through the Ruby Client SDK.</p>
+<p>If you haven’t already, download the latest Couchbase Server 2.0
+release and install it. While following the download instructions and
+setup wizard, make sure install the <code class="literal">beer-sample</code> default bucket. It
+contains sample data of beers and breweries, which we’ll be using in
+our examples here. If you’ve already installed Couchbase Server 2.0
+and didn’t install the <code class="literal">beer-sample</code> bucket (or if you deleted it),
+just open the Web-UI and navigate to "Settings/Sample Buckets".
+Activate the <code class="literal">beer-sample</code> checkbox and click "Create". In the right
+hand corner you’ll see a notification box that will disappear once the
+bucket is ready to be used.</p>
+<p>Here’s a quick outline of what you’ll learn in this chapter:</p>
+<div class="orderedlist"><ol type="1">
+<li>
+Install the library with its dependencies.
+</li>
+<li>
+Write a simple program to demonstrate connecting to Couchbase and
+  saving some documents.
+</li>
+</ol></div>
+<p>From here on, we’ll assume that you have a Couchbase Server 2.0
+release running and the <code class="literal">beer-sample</code> bucket configured. If you need
+any help on setting up everything, there is plenty of documentation
+available:</p>
+<div class="itemizedlist"><ul type="disc">
+<li>
+Using the <a class="ulink" href="http://couchbase.com/docs/couchbase-manual-2.0/couchbase-introduction.html" target="_top">Couchbase Web Console</a>,
+  for information on using the Couchbase Administrative Console,
+</li>
+<li>
+<a class="ulink" href="http://couchbase.com/docs/couchbase-manual-2.0/couchbase-admin-web-console.html" target="_top">Couchbase CLI</a>,
+  for the command line interface,
+</li>
+<li>
+<a class="ulink" href="http://couchbase.com/docs/couchbase-manual-2.0/couchbase-admin-restapi.html" target="_top">Couchbase REST API</a>,
+  for creating and managing Couchbase resources.
+</li>
+</ul></div>
+<div class="section" lang="en" xml:lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_installing_the_couchbase_client_libraries"></a>Installing the Couchbase Client Libraries</h3></div></div></div>
+<p>Before continuing you should ensure you have a working Ruby
+environment up and running. We recommend Ruby 1.9.2 or 1.8.7
+<a class="ulink" href="http://ruby-lang.org" target="_top">http://ruby-lang.org</a>.</p>
+<p>You can verify that Ruby is installed by typing the following command:</p>
+<pre class="screen">shell&gt; ruby -v
+ruby 1.9.3p286 (2012-10-12 revision 37165) [x86_64-linux]</pre>
+<p>Another dependency needed for client is libcouchbase. Please consult
+[<a class="ulink" href="http://www.couchbase.com/develop/c/current%5D" target="_top">C Client Library</a> page
+about ways to get it on your system. Here we will assume you are using
+the Ubuntu/Debian GNU/Linux family and have the <code class="literal">apt</code> tool.</p>
+<p>Note that the libcouchbase dependency is not needed if you are on
+Microsoft Windows, as all dependencies are bundled in the source.</p>
+<p>Once you have installed libcouchbase, you are then ready to install
+the most recent client using rubygems.</p>
+<pre class="screen">shell&gt; gem install couchbase
+Fetching: couchbase-1.2.0.gem (100%)
+Building native extensions.  This could take a while...
+Successfully installed couchbase-1.2.0
+1 gem installed</pre>
+<p>Lets load and verify library version.</p>
+<pre class="screen">shell&gt; ruby -rrubygems -rcouchbase -e 'puts Couchbase::VERSION'
+1.2.0</pre>
+</div>
+<div class="section" lang="en" xml:lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_hello_couchbase"></a>Hello Couchbase</h3></div></div></div>
+<p>To follow the tradition of programming tutorials, we’ll start with
+"Hello Couchbase". In the first example, we’ll connect to the Cluster,
+retrieve the document, print it out and modify it. This first
+example contains the full sourcecode, but in later example we’ll omit
+the preamble and assume we’re already connected to the cluster.</p>
+<pre class="programlisting">require 'rubygems'
+require 'couchbase'
+
+client = Couchbase.connect(:bucket =&gt; "beer-sample",
+                           :host =&gt; "localhost")
+
+beer = client.get("aass_brewery-juleol")
+puts "#{beer['name']}, ABV: #{beer['abv']}"
+
+beer['comment'] = "Random beer from Norway"
+client.replace("aass_brewery-juleol", beer)
+
+client.disconnect</pre>
+<p>While this code should be very easy to grasp, there is a lot going on
+worth a little more discussion:</p>
+<div class="itemizedlist"><ul type="disc">
+<li>
+Connecting: the <code class="literal">Couchbase.connect</code> basically creates an instance of
+  <code class="literal">Couchbase::Bucket</code> class internally passing all arguments to its
+  contructor. You can see complete list of options on the
+  <a class="ulink" href="http://rdoc.info/gems/couchbase/Couchbase/Bucket#initialize-instance_method" target="_top">API documentation site</a>.
+  In our example the most interesting option is <code class="literal">:bucket</code>. Because our
+  data bucket isn’t "default" we must specify it during connection.
+  The bucket is the container for all your documents. Inside a bucket,
+  a key — the identifier for a document — must be unique. In
+  production environments, it is recommended to use a password on a
+  bucket (this can be configured during bucket creation), but when you
+  are just starting out using the default bucket without a password is
+  fine. Note that the <code class="literal">beer-sample</code> bucket also doesn’t have a password,
+  so just change the bucket name and you’re set. Another option is
+  <code class="literal">:host</code> which tells the client library the address of the cluster. While
+  passing in only one host is fine, it is strongly recommended to add
+  two or three (of course, if your cluster has more than one node) and
+  use <code class="literal">:node_list</code> option instead. It is important to understand that
+  this list does not have to contain all nodes in the cluster — you
+  just need to provide a few so that during the initial bootstrap
+  phase the Client is able to connect to the server.  Any two or three
+  nodes will be fine, but maintain this list.  After this has
+  happened, the Client automatically fetches the cluster configuration
+  and keeps it up to date, even when the cluster topology changes.
+  This means that you don’t need to change your application config at
+  all when you resize your cluster.
+</li>
+<li>
+Set and get: these two operations are the most fundamental
+  ones. You can use set to create or completely replace a document inside your
+  bucket and get to read it back afterwards. There are lots of
+  arguments and variations, but if you just use them as shown in the
+  previous example will get you pretty far. The sample is using the
+  <code class="literal">Couchbase::Bucket#replace</code> operation. It behaves exactly like
+  <code class="literal">#set</code> but will raise an error if the document isn’t in the
+  bucket. Note that by default all operations are using JSON to store
+  your documents, so make sure it is possible to represent your values
+  in this format. If not, you might use <code class="literal">:marshal</code> format. Find more
+  info about the formats in the API documentation.
+</li>
+<li>
+Disconnecting: at the end of the program (or when you shutdown your
+  server instance), you should use the <code class="literal">Couchbase::Bucket#disconnect</code>
+  method. But you should know that the instance will be disconnected
+  properly if it is destroyed by garbage collector.
+</li>
+</ul></div>
+<p>That’s it. We’re ready to run our first Couchbase program.</p>
+<pre class="screen">shell&gt; ruby hello.rb
+Juleøl, ABV: 5.9</pre>
+</div>
+</div>
+    </div>
+
+    <hr/>
+
+    <div class="nav" id="navfooter">
+    <table width="100%">
+      <tr><td width="33%" align="left">
+        
+         <a href="index.html">Prev</a><br/>
+         Main
+        
+      </td><td width="33%" align="center">
+        
+         <a href="index.html">Home</a><br/>
+         Couchbase Ruby Client Manual
+        
+      </td><td width="33%" align="right">
+        
+          <a href="working_with_documents.html">Next</a><br/>
+          Working with Documents
+        
+      </td></tr>
+    </table>
+    </div>
+  </body>
+</html>

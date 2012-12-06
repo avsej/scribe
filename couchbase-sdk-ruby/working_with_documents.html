@@ -1,0 +1,369 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="master.css" type="text/css" />
+    <title>Working with Documents</title>
+  </head>
+
+  <body>
+    <div class="nav" id="navheader">
+    <table width="100%">
+      <tr><td width="33%" align="left">
+        
+         <a href="title.html">Prev</a><br/>
+         Getting Started
+        
+      </td><td width="33%" align="center">
+        
+         <a href="index.html">Home</a><br/>
+         <strong>Couchbase Ruby Client Manual</strong>
+        
+      </td><td width="33%" align="right">
+        
+          <a href="advanced_topics.html">Next</a><br/>
+          Advanced Topics
+        
+      </td></tr>
+    </table>
+    </div>
+
+    <hr/>
+
+    <div class="content">
+      <div class="section" lang="en" xml:lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a id="_working_with_documents"></a>Working with Documents</h2></div></div></div>
+<p>A document in Couchbase Server consists of a value and meta
+information, like a unique key, a CAS value, flags etc.  These are all stored in a bucket.
+A document can be anything, but it is recommended to use the JSON
+format. JSON is very convenient for storing structured data with
+little overhead, and is also used inside the View engine. This means
+that if you want to get most out of Couchbase Server 2.0, use JSON.</p>
+<p>The couchbase client will use any of accessible JSON libraries
+supported by <a class="ulink" href="https://rubygems.org/gems/multi_json" target="_top">multi_json gem</a>.
+This mean if your values are serializable with <code class="literal">MultiJson.dump</code>, you
+can pass them to mutator methods and be sure you will get them later in
+the same form.</p>
+<p>The following chapter introduces the basic operations that you can use
+as the fundamental building blocks of your application.</p>
+<p>Here’s a quick outline of what you’ll learn in this chapter:</p>
+<div class="orderedlist"><ol type="1">
+<li>
+Write a program to demonstrate using Create, Read, Update, Delete
+  (CRUD) operations on documents.
+</li>
+<li>
+Explore some of the API methods that will take you further than what
+  you’ve seen previously.
+</li>
+</ol></div>
+<div class="section" lang="en" xml:lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_creating_and_updating_documents"></a>Creating and Updating Documents</h3></div></div></div>
+<p>Couchbase Server provides a set of commands to store documents. The
+commands are very similar to each other and differ only in their
+meaning on the server-side. These are:</p>
+<div class="horizontal"><table border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody valign="top">
+<tr>
+<td valign="top">
+<p>
+<code class="literal">set</code>
+</p>
+</td>
+<td valign="top">
+<p>
+Stores a document in Couchbase Server (identified by its unique
+        key) and overrides the previous document (if there was one).
+</p>
+</td>
+</tr>
+<tr>
+<td valign="top">
+<p>
+<code class="literal">add</code>
+</p>
+</td>
+<td valign="top">
+<p>
+Adds a document in Couchbase Server (identified by its unique
+        key) and fails if there is already a document with the same
+        key stored.
+</p>
+</td>
+</tr>
+<tr>
+<td valign="top">
+<p>
+<code class="literal">replace</code>
+</p>
+</td>
+<td valign="top">
+<p>
+Replaces a document in Couchbase Server (identified by its
+            unique key) and fails if there is no document with the
+            given key already in place.
+</p>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p>There are also additional commands mutation commands, which do make
+sense when you are working in <code class="literal">:plain</code> mode, because they are
+implmented on the server and not JSON-aware. But still they might be
+useful in your application:</p>
+<div class="horizontal"><table border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody valign="top">
+<tr>
+<td valign="top">
+<p>
+<code class="literal">prepend</code>
+</p>
+</td>
+<td valign="top">
+<p>
+Prepend given string to the value. The concatenation is
+            done on the server side.
+</p>
+</td>
+</tr>
+<tr>
+<td valign="top">
+<p>
+<code class="literal">append</code>
+</p>
+</td>
+<td valign="top">
+<p>
+Append given string to the value. The concatenation is
+           also done on the server side.
+</p>
+</td>
+</tr>
+<tr>
+<td valign="top">
+<p>
+<code class="literal">increment</code>
+</p>
+</td>
+<td valign="top">
+<p>
+Increment, atomically, the value. The value is a string
+              representation of an unsigned integer. The new value is
+              returned by the operation. By default it
+              will increment by one. See API reference for other options.
+</p>
+</td>
+</tr>
+<tr>
+<td valign="top">
+<p>
+<code class="literal">decrement</code>
+</p>
+</td>
+<td valign="top">
+<p>
+Decrement, atomically, the value. The value is a string
+              representation of an unsigned integer. The new value is
+              returned by the operation. By default it
+              will decrement by one. See API reference for other options.
+</p>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p>The SDK provides several options for these operations, but to start
+out here are the simplest forms:</p>
+<pre class="programlisting">key = "aass_brewery-juleol"
+doc = {"name" =&gt; "Juleøl", "abv" =&gt; 5.9}
+
+client.add(key, doc);
+client.set(key, doc);
+client.replace(key, doc);</pre>
+</div>
+<div class="section" lang="en" xml:lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_reading_documents"></a>Reading Documents</h3></div></div></div>
+<p>With Couchbase Server 2.0, you have two ways of fetching your
+documents: either by the unique key through the get method, or through
+Views. Since Views are more complex, let’s just look at a simple get first:</p>
+<pre class="programlisting">doc = client.get("aass_brewery-juleol")
+
+keys = ["foo", "bar"]
+docs = client.get(keys, :quiet =&gt; true)</pre>
+<p>In this case you will receve the Hash document you stored earlier. If
+there no such key in the bucket, the exception
+<code class="literal">Couchbase::Error:NotFound</code> will be raised. But you can suppress all
+<code class="literal">NotFound</code> errors by using option <code class="literal">:quiet =&gt; true</code> and the method will
+return <code class="literal">nil</code> instead. The <code class="literal">Couchbase::Bucket#get</code> method can also
+accept list of keys returning list of documents.</p>
+<p>With Couchbase Server 2.0, the very powerful ability to query your
+documents across this distributed system through secondary indexes (Views) has been added to your
+toolbelt. This guide gets you started on how to use them through the
+Ruby SDK, if you want to learn more please refer to
+<a class="ulink" href="http://www.couchbase.com/docs/couchbase-manual-2.0/couchbase-views.html" target="_top">the
+chapter in the Couchbase Server 2.0 documentation</a>.</p>
+<p>Once you created your View in the UI, you can query it from the SDK in
+two steps. First, you grab the design document definition from the
+cluster, second query view with options you need and use results.
+In its simplest form, it looks like this:</p>
+<pre class="programlisting"># 1: Get the design document definition
+ddoc = client.design_docs["beer"]
+ddoc.views      #=&gt; ["brewery_beers", "by_location"]
+
+# 2: Query the view and use results
+ddoc.brewery_beers.each do |row|
+  puts row.key
+  puts row.value
+  puts row.id
+  puts row.doc
+end</pre>
+<p>Note that the view request won’t be executed until you will try to
+access the results. This means that you can pass view object
+(<code class="literal">ddoc.brewery_beers</code> here) without executing it.</p>
+<p>Views can be queried with a large amount of options to change what the
+results of the query will contain. All supported
+options are available as items in options Hash accepted either by the
+view method or by <code class="literal">#each</code> iterator on the view. Here are some of them:</p>
+<div class="horizontal"><table border="0">
+<colgroup>
+<col>
+<col>
+</colgroup>
+<tbody valign="top">
+<tr>
+<td valign="top">
+<p>
+include_docs (Boolean)
+</p>
+</td>
+<td valign="top">
+<p>
+Used to define if the complete documents
+                         should be fetched with the result (<code class="literal">false</code>
+                         by default).  Note this will actually fetch
+                         the document itself from the cache, so if it
+                         has been changed or deleted you may not
+                         receive a document that matches the view, or
+                         any at all.
+</p>
+</td>
+</tr>
+<tr>
+<td valign="top">
+<p>
+reduce (Boolean)
+</p>
+</td>
+<td valign="top">
+<p>
+Used to enable/disable the reduce function (if
+                   there is one defined on the server). <code class="literal">true</code> by
+                   default.
+</p>
+</td>
+</tr>
+<tr>
+<td valign="top">
+<p>
+limit (Fixnum)
+</p>
+</td>
+<td valign="top">
+<p>
+Limit the number of results that should be returned.
+</p>
+</td>
+</tr>
+<tr>
+<td valign="top">
+<p>
+descending (Boolean)
+</p>
+</td>
+<td valign="top">
+<p>
+Revert the sorting order of the result set.
+                       (<code class="literal">false</code> by default)
+</p>
+</td>
+</tr>
+<tr>
+<td valign="top">
+<p>
+stale (Boolean, Symbol)
+</p>
+</td>
+<td valign="top">
+<p>
+Can be used to define the tradeoff between
+                          performance and freshness of the data.
+                           (<code class="literal">:update_after</code> by default)
+</p>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p>Now that we have our View information in place, we can issue the
+query, which actually triggers the scatter-gather data loading process
+on the Cluster. We can use it to iterate over the results and print
+out some details (here is a more complete example which also includes
+the full documents and only fetches the first five results). The
+resulting information is encapsulated inside the <code class="literal">ViewRow</code> object.</p>
+<pre class="programlisting">view = client.design_docs["beer"].brewery_beers
+
+# Include all docs and limit to 5
+view.each(:include_docs =&gt; true, :limit =&gt; 5) do |row|
+  puts row.id
+  # The full document (as a Hash) is available through row.doc
+end</pre>
+<p>In the logs, you can see the corresponding document keys automatically sorted (ascending):</p>
+<pre class="screen">21st_amendment_brewery_cafe
+21st_amendment_brewery_cafe-21a_ipa
+21st_amendment_brewery_cafe-563_stout
+21st_amendment_brewery_cafe-amendment_pale_ale
+21st_amendment_brewery_cafe-bitter_american</pre>
+</div>
+<div class="section" lang="en" xml:lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_deleting_documents"></a>Deleting Documents</h3></div></div></div>
+<p>If you want to get rid of a document, you can use the delete operation:</p>
+<pre class="programlisting">client.delete("aass_brewery-juleol");</pre>
+</div>
+</div>
+
+    </div>
+
+    <hr/>
+
+    <div class="nav" id="navfooter">
+    <table width="100%">
+      <tr><td width="33%" align="left">
+        
+         <a href="title.html">Prev</a><br/>
+         Getting Started
+        
+      </td><td width="33%" align="center">
+        
+         <a href="index.html">Home</a><br/>
+         Couchbase Ruby Client Manual
+        
+      </td><td width="33%" align="right">
+        
+          <a href="advanced_topics.html">Next</a><br/>
+          Advanced Topics
+        
+      </td></tr>
+    </table>
+    </div>
+  </body>
+</html>

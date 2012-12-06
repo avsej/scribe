@@ -1,0 +1,2091 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+<meta name="generator" content="AsciiDoc 8.6.7" />
+<title>Couchbase Ruby Client Manual</title>
+<style type="text/css">
+/* Shared CSS for AsciiDoc xhtml11 and html5 backends */
+
+/* Default font. */
+body {
+  font-family: Georgia,serif;
+}
+
+/* Title font. */
+h1, h2, h3, h4, h5, h6,
+div.title, caption.title,
+thead, p.table.header,
+#toctitle,
+#author, #revnumber, #revdate, #revremark,
+#footer {
+  font-family: Arial,Helvetica,sans-serif;
+}
+
+body {
+  margin: 1em 5% 1em 5%;
+}
+
+a {
+  color: blue;
+  text-decoration: underline;
+}
+a:visited {
+  color: fuchsia;
+}
+
+em {
+  font-style: italic;
+  color: navy;
+}
+
+strong {
+  font-weight: bold;
+  color: #083194;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #527bbd;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+}
+
+h1, h2, h3 {
+  border-bottom: 2px solid silver;
+}
+h2 {
+  padding-top: 0.5em;
+}
+h3 {
+  float: left;
+}
+h3 + * {
+  clear: left;
+}
+h5 {
+  font-size: 1.0em;
+}
+
+div.sectionbody {
+  margin-left: 0;
+}
+
+hr {
+  border: 1px solid silver;
+}
+
+p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+ul, ol, li > p {
+  margin-top: 0;
+}
+ul > li     { color: #aaa; }
+ul > li > * { color: black; }
+
+pre {
+  padding: 0;
+  margin: 0;
+}
+
+#author {
+  color: #527bbd;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+#email {
+}
+#revnumber, #revdate, #revremark {
+}
+
+#footer {
+  font-size: small;
+  border-top: 2px solid silver;
+  padding-top: 0.5em;
+  margin-top: 4.0em;
+}
+#footer-text {
+  float: left;
+  padding-bottom: 0.5em;
+}
+#footer-badges {
+  float: right;
+  padding-bottom: 0.5em;
+}
+
+#preamble {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.imageblock, div.exampleblock, div.verseblock,
+div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
+div.admonitionblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+div.admonitionblock {
+  margin-top: 2.0em;
+  margin-bottom: 2.0em;
+  margin-right: 10%;
+  color: #606060;
+}
+
+div.content { /* Block element content. */
+  padding: 0;
+}
+
+/* Block element titles. */
+div.title, caption.title {
+  color: #527bbd;
+  font-weight: bold;
+  text-align: left;
+  margin-top: 1.0em;
+  margin-bottom: 0.5em;
+}
+div.title + * {
+  margin-top: 0;
+}
+
+td div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content + div.title {
+  margin-top: 0.0em;
+}
+
+div.sidebarblock > div.content {
+  background: #ffffee;
+  border: 1px solid #dddddd;
+  border-left: 4px solid #f0f0f0;
+  padding: 0.5em;
+}
+
+div.listingblock > div.content {
+  border: 1px solid #dddddd;
+  border-left: 5px solid #f0f0f0;
+  background: #f8f8f8;
+  padding: 0.5em;
+}
+
+div.quoteblock, div.verseblock {
+  padding-left: 1.0em;
+  margin-left: 1.0em;
+  margin-right: 10%;
+  border-left: 5px solid #f0f0f0;
+  color: #888;
+}
+
+div.quoteblock > div.attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock > pre.content {
+  font-family: inherit;
+  font-size: inherit;
+}
+div.verseblock > div.attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+/* DEPRECATED: Pre version 8.2.7 verse style literal block. */
+div.verseblock + div.attribution {
+  text-align: left;
+}
+
+div.admonitionblock .icon {
+  vertical-align: top;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-decoration: underline;
+  color: #527bbd;
+  padding-right: 0.5em;
+}
+div.admonitionblock td.content {
+  padding-left: 0.5em;
+  border-left: 3px solid #dddddd;
+}
+
+div.exampleblock > div.content {
+  border-left: 3px solid #dddddd;
+  padding-left: 0.5em;
+}
+
+div.imageblock div.content { padding-left: 0; }
+span.image img { border-style: none; }
+a.image:visited { color: white; }
+
+dl {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+dt {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+  font-style: normal;
+  color: navy;
+}
+dd > *:first-child {
+  margin-top: 0.1em;
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+ol.arabic {
+  list-style-type: decimal;
+}
+ol.loweralpha {
+  list-style-type: lower-alpha;
+}
+ol.upperalpha {
+  list-style-type: upper-alpha;
+}
+ol.lowerroman {
+  list-style-type: lower-roman;
+}
+ol.upperroman {
+  list-style-type: upper-roman;
+}
+
+div.compact ul, div.compact ol,
+div.compact p, div.compact p,
+div.compact div, div.compact div {
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+}
+
+tfoot {
+  font-weight: bold;
+}
+td > div.verse {
+  white-space: pre;
+}
+
+div.hdlist {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+div.hdlist tr {
+  padding-bottom: 15px;
+}
+dt.hdlist1.strong, td.hdlist1.strong {
+  font-weight: bold;
+}
+td.hdlist1 {
+  vertical-align: top;
+  font-style: normal;
+  padding-right: 0.8em;
+  color: navy;
+}
+td.hdlist2 {
+  vertical-align: top;
+}
+div.hdlist.compact tr {
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.comment {
+  background: yellow;
+}
+
+.footnote, .footnoteref {
+  font-size: 0.8em;
+}
+
+span.footnote, span.footnoteref {
+  vertical-align: super;
+}
+
+#footnotes {
+  margin: 20px 0 20px 0;
+  padding: 7px 0 0 0;
+}
+
+#footnotes div.footnote {
+  margin: 0 0 5px 0;
+}
+
+#footnotes hr {
+  border: none;
+  border-top: 1px solid silver;
+  height: 1px;
+  text-align: left;
+  margin-left: 0;
+  width: 20%;
+  min-width: 100px;
+}
+
+div.colist td {
+  padding-right: 0.5em;
+  padding-bottom: 0.3em;
+  vertical-align: top;
+}
+div.colist td img {
+  margin-top: 0.3em;
+}
+
+@media print {
+  #footer-badges { display: none; }
+}
+
+#toc {
+  margin-bottom: 2.5em;
+}
+
+#toctitle {
+  color: #527bbd;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 1.0em;
+  margin-bottom: 0.1em;
+}
+
+div.toclevel0, div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+div.toclevel2 {
+  margin-left: 2em;
+  font-size: 0.9em;
+}
+div.toclevel3 {
+  margin-left: 4em;
+  font-size: 0.9em;
+}
+div.toclevel4 {
+  margin-left: 6em;
+  font-size: 0.9em;
+}
+
+span.aqua { color: aqua; }
+span.black { color: black; }
+span.blue { color: blue; }
+span.fuchsia { color: fuchsia; }
+span.gray { color: gray; }
+span.green { color: green; }
+span.lime { color: lime; }
+span.maroon { color: maroon; }
+span.navy { color: navy; }
+span.olive { color: olive; }
+span.purple { color: purple; }
+span.red { color: red; }
+span.silver { color: silver; }
+span.teal { color: teal; }
+span.white { color: white; }
+span.yellow { color: yellow; }
+
+span.aqua-background { background: aqua; }
+span.black-background { background: black; }
+span.blue-background { background: blue; }
+span.fuchsia-background { background: fuchsia; }
+span.gray-background { background: gray; }
+span.green-background { background: green; }
+span.lime-background { background: lime; }
+span.maroon-background { background: maroon; }
+span.navy-background { background: navy; }
+span.olive-background { background: olive; }
+span.purple-background { background: purple; }
+span.red-background { background: red; }
+span.silver-background { background: silver; }
+span.teal-background { background: teal; }
+span.white-background { background: white; }
+span.yellow-background { background: yellow; }
+
+span.big { font-size: 2em; }
+span.small { font-size: 0.6em; }
+
+span.underline { text-decoration: underline; }
+span.overline { text-decoration: overline; }
+span.line-through { text-decoration: line-through; }
+
+div.unbreakable { page-break-inside: avoid; }
+
+
+/*
+ * xhtml11 specific
+ *
+ * */
+
+tt {
+  font-family: "Courier New", Courier, monospace;
+  font-size: inherit;
+  color: navy;
+}
+
+div.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+div.tableblock > table {
+  border: 3px solid #527bbd;
+}
+thead, p.table.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.table {
+  margin-top: 0;
+}
+/* Because the table frame attribute is overriden by CSS in most browsers. */
+div.tableblock > table[frame="void"] {
+  border-style: none;
+}
+div.tableblock > table[frame="hsides"] {
+  border-left-style: none;
+  border-right-style: none;
+}
+div.tableblock > table[frame="vsides"] {
+  border-top-style: none;
+  border-bottom-style: none;
+}
+
+
+/*
+ * html5 specific
+ *
+ * */
+
+.monospaced {
+  font-family: "Courier New", Courier, monospace;
+  font-size: inherit;
+  color: navy;
+}
+
+table.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+thead, p.tableblock.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.tableblock {
+  margin-top: 0;
+}
+table.tableblock {
+  border-width: 3px;
+  border-spacing: 0px;
+  border-style: solid;
+  border-color: #527bbd;
+  border-collapse: collapse;
+}
+th.tableblock, td.tableblock {
+  border-width: 1px;
+  padding: 4px;
+  border-style: solid;
+  border-color: #527bbd;
+}
+
+table.tableblock.frame-topbot {
+  border-left-style: hidden;
+  border-right-style: hidden;
+}
+table.tableblock.frame-sides {
+  border-top-style: hidden;
+  border-bottom-style: hidden;
+}
+table.tableblock.frame-none {
+  border-style: hidden;
+}
+
+th.tableblock.halign-left, td.tableblock.halign-left {
+  text-align: left;
+}
+th.tableblock.halign-center, td.tableblock.halign-center {
+  text-align: center;
+}
+th.tableblock.halign-right, td.tableblock.halign-right {
+  text-align: right;
+}
+
+th.tableblock.valign-top, td.tableblock.valign-top {
+  vertical-align: top;
+}
+th.tableblock.valign-middle, td.tableblock.valign-middle {
+  vertical-align: middle;
+}
+th.tableblock.valign-bottom, td.tableblock.valign-bottom {
+  vertical-align: bottom;
+}
+
+
+/*
+ * manpage specific
+ *
+ * */
+
+body.manpage h1 {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  border-top: 2px solid silver;
+  border-bottom: 2px solid silver;
+}
+body.manpage h2 {
+  border-style: none;
+}
+body.manpage div.sectionbody {
+  margin-left: 3em;
+}
+
+@media print {
+  body.manpage div#toc { display: none; }
+}
+/* ---------------------------------------------------------------------------
+   Bare AsciiDoc styles
+   Ryan Tomayko <r@tomayko.com>
+--------------------------------------------------------------------------- */
+
+body {
+	font-family:verdana,helvetica,arial,sans-serif;
+	font-size:81.25%;   /* 13px */
+	line-height:1.538;  /* 20px */
+	margin:40px auto 50px auto;
+	max-width:53.8461538462em; /* 790px */
+	color:#333;
+}
+
+em {
+	font-style:italic;
+}
+
+strong {
+	font-weight:bold;
+	color:#000;
+}
+
+pre, tt {
+  font-family: consolas, 'lucida console', 'bitstream vera sans mono',
+	             'courier new', monospace;
+  color: #000;
+  background-color: #eee;
+}
+
+p, ul, ol, dl {
+	margin:10px 0px;
+}
+
+p {
+  text-indent: 0px;
+}
+
+dl {
+	margin-left:40px
+}
+
+dt {
+	font-weight:normal;
+	color:#000;
+}
+
+h1, h2, h3, h4, h5 {
+	font-family:'lucida grande',georgia,verdana,helvetica,arial,sans-serif;
+	font-weight:normal;
+	color:#000;
+}
+
+h1 {
+	font-size:40px;
+	line-height:1.428;
+	margin:20px 0;
+}
+
+h2 {
+	font-size:30px;
+	line-height:1.36363636; /* repeating, of course */
+	margin:60px 0 20px 0;
+}
+
+h2 + .sectionbody {}
+
+h3 {
+	font-size:24px;
+	line-height:1.1;
+	margin:30px 0 10px 0;
+}
+
+h4 {
+	font-size:18px;
+	line-height:1.1;
+	margin:20px 0 5px 0;
+}
+
+h5 {
+	font-size:13px;
+	font-style:italic;
+	line-height:1.1;
+}
+
+#header {
+	text-align:center;
+	margin-bottom:30px;
+}
+
+#header h1 { margin-bottom:0 }
+
+.title, .sidebar-title {
+	font-weight:normal;
+	color:#000;
+	margin-bottom:0;
+}
+
+.admonitionblock .title {
+	font-weight:bold;
+}
+
+.admonitionblock {
+	margin:30px 0px;
+	color:#555;
+}
+
+.admonitionblock td.icon {
+	width:30px;
+	padding-right:20px;
+	padding-left:20px;
+	text-transform:uppercase;
+	font-weight:bold;
+	color:#888;
+}
+
+.listingblock {
+  margin: 13px 0;
+}
+
+.listingblock .content {
+	border:1px solid silver;
+	background:#eee;
+	padding:5px;
+}
+
+.listingblock .content pre {
+	margin:0;
+}
+
+.literalblock .content {
+	margin-left:40px;
+}
+
+.verseblock .content {
+	white-space:pre
+}
+
+.sidebarblock .sidebar-content {
+	border:1px solid silver;
+	background:#FFFFEE;
+	padding:0 10px;
+	color:#222;
+	font-size:smaller;
+	line-height:1.5;
+}
+
+.sidebar-title {
+	margin:10px 0;
+	font-weight:bold;
+	color:#442;
+}
+
+.quoteblock-content {
+	font-style:italic;
+	color:#444;
+	margin-left:40px;
+}
+
+.quoteblock-content .attribution {
+	font-style:normal;
+	text-align:right;
+	color:#000;
+}
+
+.exampleblock-content *:first-child { margin-top:0 }
+.exampleblock-content {
+	border-left:2px solid silver;
+	padding-left:8px;
+}
+
+#footer {
+	font-size:11px;
+	margin-top:40px;
+	border-top:1px solid silver;
+	color:#555;
+}
+
+#author {
+	color:#000;
+	text-transform:uppercase
+}
+
+pre {
+    white-space: pre-wrap;
+    overflow: hidden;
+}
+</style>
+<script type="text/javascript">
+/*<![CDATA[*/
+var asciidoc = {  // Namespace.
+
+/////////////////////////////////////////////////////////////////////
+// Table Of Contents generator
+/////////////////////////////////////////////////////////////////////
+
+/* Author: Mihai Bazon, September 2002
+ * http://students.infoiasi.ro/~mishoo
+ *
+ * Table Of Content generator
+ * Version: 0.4
+ *
+ * Feel free to use this script under the terms of the GNU General Public
+ * License, as long as you do not remove or alter this notice.
+ */
+
+ /* modified by Troy D. Hanson, September 2006. License: GPL */
+ /* modified by Stuart Rackham, 2006, 2009. License: GPL */
+
+// toclevels = 1..4.
+toc: function (toclevels) {
+
+  function getText(el) {
+    var text = "";
+    for (var i = el.firstChild; i != null; i = i.nextSibling) {
+      if (i.nodeType == 3 /* Node.TEXT_NODE */) // IE doesn't speak constants.
+        text += i.data;
+      else if (i.firstChild != null)
+        text += getText(i);
+    }
+    return text;
+  }
+
+  function TocEntry(el, text, toclevel) {
+    this.element = el;
+    this.text = text;
+    this.toclevel = toclevel;
+  }
+
+  function tocEntries(el, toclevels) {
+    var result = new Array;
+    var re = new RegExp('[hH]([1-'+(toclevels+1)+'])');
+    // Function that scans the DOM tree for header elements (the DOM2
+    // nodeIterator API would be a better technique but not supported by all
+    // browsers).
+    var iterate = function (el) {
+      for (var i = el.firstChild; i != null; i = i.nextSibling) {
+        if (i.nodeType == 1 /* Node.ELEMENT_NODE */) {
+          var mo = re.exec(i.tagName);
+          if (mo && (i.getAttribute("class") || i.getAttribute("className")) != "float") {
+            result[result.length] = new TocEntry(i, getText(i), mo[1]-1);
+          }
+          iterate(i);
+        }
+      }
+    }
+    iterate(el);
+    return result;
+  }
+
+  var toc = document.getElementById("toc");
+  if (!toc) {
+    return;
+  }
+
+  // Delete existing TOC entries in case we're reloading the TOC.
+  var tocEntriesToRemove = [];
+  var i;
+  for (i = 0; i < toc.childNodes.length; i++) {
+    var entry = toc.childNodes[i];
+    if (entry.nodeName.toLowerCase() == 'div'
+     && entry.getAttribute("class")
+     && entry.getAttribute("class").match(/^toclevel/))
+      tocEntriesToRemove.push(entry);
+  }
+  for (i = 0; i < tocEntriesToRemove.length; i++) {
+    toc.removeChild(tocEntriesToRemove[i]);
+  }
+
+  // Rebuild TOC entries.
+  var entries = tocEntries(document.getElementById("content"), toclevels);
+  for (var i = 0; i < entries.length; ++i) {
+    var entry = entries[i];
+    if (entry.element.id == "")
+      entry.element.id = "_toc_" + i;
+    var a = document.createElement("a");
+    a.href = "#" + entry.element.id;
+    a.appendChild(document.createTextNode(entry.text));
+    var div = document.createElement("div");
+    div.appendChild(a);
+    div.className = "toclevel" + entry.toclevel;
+    toc.appendChild(div);
+  }
+  if (entries.length == 0)
+    toc.parentNode.removeChild(toc);
+},
+
+
+/////////////////////////////////////////////////////////////////////
+// Footnotes generator
+/////////////////////////////////////////////////////////////////////
+
+/* Based on footnote generation code from:
+ * http://www.brandspankingnew.net/archive/2005/07/format_footnote.html
+ */
+
+footnotes: function () {
+  // Delete existing footnote entries in case we're reloading the footnodes.
+  var i;
+  var noteholder = document.getElementById("footnotes");
+  if (!noteholder) {
+    return;
+  }
+  var entriesToRemove = [];
+  for (i = 0; i < noteholder.childNodes.length; i++) {
+    var entry = noteholder.childNodes[i];
+    if (entry.nodeName.toLowerCase() == 'div' && entry.getAttribute("class") == "footnote")
+      entriesToRemove.push(entry);
+  }
+  for (i = 0; i < entriesToRemove.length; i++) {
+    noteholder.removeChild(entriesToRemove[i]);
+  }
+
+  // Rebuild footnote entries.
+  var cont = document.getElementById("content");
+  var spans = cont.getElementsByTagName("span");
+  var refs = {};
+  var n = 0;
+  for (i=0; i<spans.length; i++) {
+    if (spans[i].className == "footnote") {
+      n++;
+      var note = spans[i].getAttribute("data-note");
+      if (!note) {
+        // Use [\s\S] in place of . so multi-line matches work.
+        // Because JavaScript has no s (dotall) regex flag.
+        note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+        spans[i].innerHTML =
+          "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+        spans[i].setAttribute("data-note", note);
+      }
+      noteholder.innerHTML +=
+        "<div class='footnote' id='_footnote_" + n + "'>" +
+        "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
+        n + "</a>. " + note + "</div>";
+      var id =spans[i].getAttribute("id");
+      if (id != null) refs["#"+id] = n;
+    }
+  }
+  if (n == 0)
+    noteholder.parentNode.removeChild(noteholder);
+  else {
+    // Process footnoterefs.
+    for (i=0; i<spans.length; i++) {
+      if (spans[i].className == "footnoteref") {
+        var href = spans[i].getElementsByTagName("a")[0].getAttribute("href");
+        href = href.match(/#.*/)[0];  // Because IE return full URL.
+        n = refs[href];
+        spans[i].innerHTML =
+          "[<a href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+      }
+    }
+  }
+},
+
+install: function(toclevels) {
+  var timerId;
+
+  function reinstall() {
+    asciidoc.footnotes();
+    if (toclevels) {
+      asciidoc.toc(toclevels);
+    }
+  }
+
+  function reinstallAndRemoveTimer() {
+    clearInterval(timerId);
+    reinstall();
+  }
+
+  timerId = setInterval(reinstall, 500);
+  if (document.addEventListener)
+    document.addEventListener("DOMContentLoaded", reinstallAndRemoveTimer, false);
+  else
+    window.onload = reinstallAndRemoveTimer;
+}
+
+}
+asciidoc.install();
+/*]]>*/
+</script>
+</head>
+<body class="article">
+<div id="header">
+<h1>Couchbase Ruby Client Manual</h1>
+<span id="author">Sergey Avseyev</span><br />
+<span id="email"><tt>&lt;<a href="mailto:sergey@couchbase.com">sergey@couchbase.com</a>&gt;</tt></span><br />
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_abstract">Abstract</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>This is the manual for 1.2 of the Couchbase Ruby client library, which
+is compatible with Couchbase Server 2.0.</p></div>
+<div class="paragraph"><p>This manual provides a reference to the key features and best
+practices for using the Ruby Couchbase Client Library . The content
+constitutes a reference to the core API, not a complete guide to the
+entire API functionality.</p></div>
+<div class="tableblock">
+<table rules="all"
+width="100%"
+frame="border"
+cellspacing="0" cellpadding="4">
+<caption class="title">Table 1. Product Compatibility for Couchbase Ruby SDK</caption>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+<thead>
+<tr>
+<th align="left" valign="top"> Product              </th>
+<th align="left" valign="top"> Compatible </th>
+<th align="left" valign="top"> All Features</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left" valign="top"><p class="table">Couchbase Server 1.8</p></td>
+<td align="left" valign="top"><p class="table">✓</p></td>
+<td align="left" valign="top"><p class="table">✓</p></td>
+</tr>
+<tr>
+<td align="left" valign="top"><p class="table">Couchbase Server 2.0</p></td>
+<td align="left" valign="top"><p class="table">✓</p></td>
+<td align="left" valign="top"><p class="table">✓</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="ulist"><div class="title">External Community Resources</div><ul>
+<li>
+<p>
+<a href="http://www.couchbase.com/develope/ruby/next">Home page on couchbase.com</a>
+</p>
+</li>
+<li>
+<p>
+<a href="https://rubygems.org/gems/couchbase">Download client library</a>
+</p>
+</li>
+<li>
+<p>
+<a href="http://rubydoc.info/gems/couchbase">RDoc</a>
+</p>
+</li>
+<li>
+<p>
+<a href="http://www.couchbase.com/forums/sdks/sdks">SDK forum</a>
+</p>
+</li>
+<li>
+<p>
+<a href="http://couchbase.com/issues/browse/RCBC">Issue tracker</a>
+</p>
+</li>
+<li>
+<p>
+<a href="https://github.com/couchbase/couchbase-ruby-client">Sourse code repository</a>
+</p>
+</li>
+</ul></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Warning</div>
+</td>
+<td class="content">The following document is still in production, and is not
+         considered complete or exhaustive.</td>
+</tr></table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_getting_started">Getting Started</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Awesome that you want to learn more about Couchbase! This is the right
+place to start your journey. This chapter will teach you the basics of
+Couchbase and how to interact with it through the Ruby Client SDK.</p></div>
+<div class="paragraph"><p>If you haven&#8217;t already, download the latest Couchbase Server 2.0
+release and install it. While following the download instructions and
+setup wizard, make sure install the <tt>beer-sample</tt> default bucket. It
+contains sample data of beers and breweries, which we&#8217;ll be using in
+our examples here. If you&#8217;ve already installed Couchbase Server 2.0
+and didn&#8217;t install the <tt>beer-sample</tt> bucket (or if you deleted it),
+just open the Web-UI and navigate to "Settings/Sample Buckets".
+Activate the <tt>beer-sample</tt> checkbox and click "Create". In the right
+hand corner you&#8217;ll see a notification box that will disappear once the
+bucket is ready to be used.</p></div>
+<div class="paragraph"><p>Here&#8217;s a quick outline of what you&#8217;ll learn in this chapter:</p></div>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+Install the library with its dependencies.
+</p>
+</li>
+<li>
+<p>
+Write a simple program to demonstrate connecting to Couchbase and
+  saving some documents.
+</p>
+</li>
+</ol></div>
+<div class="paragraph"><p>From here on, we&#8217;ll assume that you have a Couchbase Server 2.0
+release running and the <tt>beer-sample</tt> bucket configured. If you need
+any help on setting up everything, there is plenty of documentation
+available:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Using the <a href="http://couchbase.com/docs/couchbase-manual-2.0/couchbase-introduction.html">Couchbase Web Console</a>,
+  for information on using the Couchbase Administrative Console,
+</p>
+</li>
+<li>
+<p>
+<a href="http://couchbase.com/docs/couchbase-manual-2.0/couchbase-admin-web-console.html">Couchbase CLI</a>,
+  for the command line interface,
+</p>
+</li>
+<li>
+<p>
+<a href="http://couchbase.com/docs/couchbase-manual-2.0/couchbase-admin-restapi.html">Couchbase REST API</a>,
+  for creating and managing Couchbase resources.
+</p>
+</li>
+</ul></div>
+<div class="sect2">
+<h3 id="_installing_the_couchbase_client_libraries">Installing the Couchbase Client Libraries</h3>
+<div class="paragraph"><p>Before continuing you should ensure you have a working Ruby
+environment up and running. We recommend Ruby 1.9.2 or 1.8.7
+<a href="http://ruby-lang.org">http://ruby-lang.org</a>.</p></div>
+<div class="paragraph"><p>You can verify that Ruby is installed by typing the following command:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>shell&gt; ruby -v
+ruby 1.9.3p286 (2012-10-12 revision 37165) [x86_64-linux]</tt></pre>
+</div></div>
+<div class="paragraph"><p>Another dependency needed for client is libcouchbase. Please consult
+[<a href="http://www.couchbase.com/develop/c/current]">C Client Library</a> page
+about ways to get it on your system. Here we will assume you are using
+the Ubuntu/Debian GNU/Linux family and have the <tt>apt</tt> tool.</p></div>
+<div class="paragraph"><p>Note that the libcouchbase dependency is not needed if you are on
+Microsoft Windows, as all dependencies are bundled in the source.</p></div>
+<div class="paragraph"><p>Once you have installed libcouchbase, you are then ready to install
+the most recent client using rubygems.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>shell&gt; gem install couchbase
+Fetching: couchbase-1.2.0.gem (100%)
+Building native extensions.  This could take a while...
+Successfully installed couchbase-1.2.0
+1 gem installed</tt></pre>
+</div></div>
+<div class="paragraph"><p>Lets load and verify library version.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>shell&gt; ruby -rrubygems -rcouchbase -e 'puts Couchbase::VERSION'
+1.2.0</tt></pre>
+</div></div>
+</div>
+<div class="sect2">
+<h3 id="_hello_couchbase">Hello Couchbase</h3>
+<div class="paragraph"><p>To follow the tradition of programming tutorials, we&#8217;ll start with
+"Hello Couchbase". In the first example, we&#8217;ll connect to the Cluster,
+retrieve the document, print it out and modify it. This first
+example contains the full sourcecode, but in later example we&#8217;ll omit
+the preamble and assume we&#8217;re already connected to the cluster.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #000080">require</span></span> <span style="color: #FF0000">'rubygems'</span>
+<span style="font-weight: bold"><span style="color: #000080">require</span></span> <span style="color: #FF0000">'couchbase'</span>
+
+client <span style="color: #990000">=</span> Couchbase<span style="color: #990000">.</span>connect<span style="color: #990000">(:</span>bucket <span style="color: #990000">=&gt;</span> <span style="color: #FF0000">"beer-sample"</span><span style="color: #990000">,</span>
+                           <span style="color: #990000">:</span>host <span style="color: #990000">=&gt;</span> <span style="color: #FF0000">"localhost"</span><span style="color: #990000">)</span>
+
+beer <span style="color: #990000">=</span> client<span style="color: #990000">.</span>get<span style="color: #990000">(</span><span style="color: #FF0000">"aass_brewery-juleol"</span><span style="color: #990000">)</span>
+puts <span style="color: #FF0000">"#{beer['name']}, ABV: #{beer['abv']}"</span>
+
+beer<span style="color: #990000">[</span><span style="color: #FF0000">'comment'</span><span style="color: #990000">]</span> <span style="color: #990000">=</span> <span style="color: #FF0000">"Random beer from Norway"</span>
+client<span style="color: #990000">.</span>replace<span style="color: #990000">(</span><span style="color: #FF0000">"aass_brewery-juleol"</span><span style="color: #990000">,</span> beer<span style="color: #990000">)</span>
+
+client<span style="color: #990000">.</span>disconnect</tt></pre></div></div>
+<div class="paragraph"><p>While this code should be very easy to grasp, there is a lot going on
+worth a little more discussion:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Connecting: the <tt>Couchbase.connect</tt> basically creates an instance of
+  <tt>Couchbase::Bucket</tt> class internally passing all arguments to its
+  contructor. You can see complete list of options on the
+  <a href="http://rdoc.info/gems/couchbase/Couchbase/Bucket#initialize-instance_method">API documentation site</a>.
+  In our example the most interesting option is <tt>:bucket</tt>. Because our
+  data bucket isn&#8217;t "default" we must specify it during connection.
+  The bucket is the container for all your documents. Inside a bucket,
+  a key&#8201;&#8212;&#8201;the identifier for a document&#8201;&#8212;&#8201;must be unique. In
+  production environments, it is recommended to use a password on a
+  bucket (this can be configured during bucket creation), but when you
+  are just starting out using the default bucket without a password is
+  fine. Note that the <tt>beer-sample</tt> bucket also doesn&#8217;t have a password,
+  so just change the bucket name and you&#8217;re set. Another option is
+  <tt>:host</tt> which tells the client library the address of the cluster. While
+  passing in only one host is fine, it is strongly recommended to add
+  two or three (of course, if your cluster has more than one node) and
+  use <tt>:node_list</tt> option instead. It is important to understand that
+  this list does not have to contain all nodes in the cluster&#8201;&#8212;&#8201;you
+  just need to provide a few so that during the initial bootstrap
+  phase the Client is able to connect to the server.  Any two or three
+  nodes will be fine, but maintain this list.  After this has
+  happened, the Client automatically fetches the cluster configuration
+  and keeps it up to date, even when the cluster topology changes.
+  This means that you don&#8217;t need to change your application config at
+  all when you resize your cluster.
+</p>
+</li>
+<li>
+<p>
+Set and get: these two operations are the most fundamental
+  ones. You can use set to create or completely replace a document inside your
+  bucket and get to read it back afterwards. There are lots of
+  arguments and variations, but if you just use them as shown in the
+  previous example will get you pretty far. The sample is using the
+  <tt>Couchbase::Bucket#replace</tt> operation. It behaves exactly like
+  <tt>#set</tt> but will raise an error if the document isn&#8217;t in the
+  bucket. Note that by default all operations are using JSON to store
+  your documents, so make sure it is possible to represent your values
+  in this format. If not, you might use <tt>:marshal</tt> format. Find more
+  info about the formats in the API documentation.
+</p>
+</li>
+<li>
+<p>
+Disconnecting: at the end of the program (or when you shutdown your
+  server instance), you should use the <tt>Couchbase::Bucket#disconnect</tt>
+  method. But you should know that the instance will be disconnected
+  properly if it is destroyed by garbage collector.
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>That&#8217;s it. We&#8217;re ready to run our first Couchbase program.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>shell&gt; ruby hello.rb
+Juleøl, ABV: 5.9</tt></pre>
+</div></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_working_with_documents">Working with Documents</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>A document in Couchbase Server consists of a value and meta
+information, like a unique key, a CAS value, flags etc.  These are all stored in a bucket.
+A document can be anything, but it is recommended to use the JSON
+format. JSON is very convenient for storing structured data with
+little overhead, and is also used inside the View engine. This means
+that if you want to get most out of Couchbase Server 2.0, use JSON.</p></div>
+<div class="paragraph"><p>The couchbase client will use any of accessible JSON libraries
+supported by <a href="https://rubygems.org/gems/multi_json">multi_json gem</a>.
+This mean if your values are serializable with <tt>MultiJson.dump</tt>, you
+can pass them to mutator methods and be sure you will get them later in
+the same form.</p></div>
+<div class="paragraph"><p>The following chapter introduces the basic operations that you can use
+as the fundamental building blocks of your application.</p></div>
+<div class="paragraph"><p>Here&#8217;s a quick outline of what you&#8217;ll learn in this chapter:</p></div>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+Write a program to demonstrate using Create, Read, Update, Delete
+  (CRUD) operations on documents.
+</p>
+</li>
+<li>
+<p>
+Explore some of the API methods that will take you further than what
+  you&#8217;ve seen previously.
+</p>
+</li>
+</ol></div>
+<div class="sect2">
+<h3 id="_creating_and_updating_documents">Creating and Updating Documents</h3>
+<div class="paragraph"><p>Couchbase Server provides a set of commands to store documents. The
+commands are very similar to each other and differ only in their
+meaning on the server-side. These are:</p></div>
+<div class="hdlist"><table>
+<tr>
+<td class="hdlist1">
+<tt>set</tt>
+<br />
+</td>
+<td class="hdlist2">
+<p style="margin-top: 0;">
+Stores a document in Couchbase Server (identified by its unique
+        key) and overrides the previous document (if there was one).
+</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<tt>add</tt>
+<br />
+</td>
+<td class="hdlist2">
+<p style="margin-top: 0;">
+Adds a document in Couchbase Server (identified by its unique
+        key) and fails if there is already a document with the same
+        key stored.
+</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<tt>replace</tt>
+<br />
+</td>
+<td class="hdlist2">
+<p style="margin-top: 0;">
+Replaces a document in Couchbase Server (identified by its
+            unique key) and fails if there is no document with the
+            given key already in place.
+</p>
+</td>
+</tr>
+</table></div>
+<div class="paragraph"><p>There are also additional commands mutation commands, which do make
+sense when you are working in <tt>:plain</tt> mode, because they are
+implmented on the server and not JSON-aware. But still they might be
+useful in your application:</p></div>
+<div class="hdlist"><table>
+<tr>
+<td class="hdlist1">
+<tt>prepend</tt>
+<br />
+</td>
+<td class="hdlist2">
+<p style="margin-top: 0;">
+Prepend given string to the value. The concatenation is
+            done on the server side.
+</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<tt>append</tt>
+<br />
+</td>
+<td class="hdlist2">
+<p style="margin-top: 0;">
+Append given string to the value. The concatenation is
+           also done on the server side.
+</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<tt>increment</tt>
+<br />
+</td>
+<td class="hdlist2">
+<p style="margin-top: 0;">
+Increment, atomically, the value. The value is a string
+              representation of an unsigned integer. The new value is
+              returned by the operation. By default it
+              will increment by one. See API reference for other options.
+</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+<tt>decrement</tt>
+<br />
+</td>
+<td class="hdlist2">
+<p style="margin-top: 0;">
+Decrement, atomically, the value. The value is a string
+              representation of an unsigned integer. The new value is
+              returned by the operation. By default it
+              will decrement by one. See API reference for other options.
+</p>
+</td>
+</tr>
+</table></div>
+<div class="paragraph"><p>The SDK provides several options for these operations, but to start
+out here are the simplest forms:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>key <span style="color: #990000">=</span> <span style="color: #FF0000">"aass_brewery-juleol"</span>
+doc <span style="color: #990000">=</span> <span style="color: #FF0000">{</span><span style="color: #FF0000">"name"</span> <span style="color: #990000">=&gt;</span> <span style="color: #FF0000">"Juleøl"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"abv"</span> <span style="color: #990000">=&gt;</span> <span style="color: #993399">5.9</span><span style="color: #FF0000">}</span>
+
+client<span style="color: #990000">.</span>add<span style="color: #990000">(</span>key<span style="color: #990000">,</span> doc<span style="color: #990000">);</span>
+client<span style="color: #990000">.</span>set<span style="color: #990000">(</span>key<span style="color: #990000">,</span> doc<span style="color: #990000">);</span>
+client<span style="color: #990000">.</span>replace<span style="color: #990000">(</span>key<span style="color: #990000">,</span> doc<span style="color: #990000">);</span></tt></pre></div></div>
+</div>
+<div class="sect2">
+<h3 id="_reading_documents">Reading Documents</h3>
+<div class="paragraph"><p>With Couchbase Server 2.0, you have two ways of fetching your
+documents: either by the unique key through the get method, or through
+Views. Since Views are more complex, let&#8217;s just look at a simple get first:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>doc <span style="color: #990000">=</span> client<span style="color: #990000">.</span>get<span style="color: #990000">(</span><span style="color: #FF0000">"aass_brewery-juleol"</span><span style="color: #990000">)</span>
+
+keys <span style="color: #990000">=</span> <span style="color: #990000">[</span><span style="color: #FF0000">"foo"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"bar"</span><span style="color: #990000">]</span>
+docs <span style="color: #990000">=</span> client<span style="color: #990000">.</span>get<span style="color: #990000">(</span>keys<span style="color: #990000">,</span> <span style="color: #990000">:</span>quiet <span style="color: #990000">=&gt;</span> <span style="font-weight: bold"><span style="color: #0000FF">true</span></span><span style="color: #990000">)</span></tt></pre></div></div>
+<div class="paragraph"><p>In this case you will receve the Hash document you stored earlier. If
+there no such key in the bucket, the exception
+<tt>Couchbase::Error:NotFound</tt> will be raised. But you can suppress all
+<tt>NotFound</tt> errors by using option <tt>:quiet =&gt; true</tt> and the method will
+return <tt>nil</tt> instead. The <tt>Couchbase::Bucket#get</tt> method can also
+accept list of keys returning list of documents.</p></div>
+<div class="paragraph"><p>With Couchbase Server 2.0, the very powerful ability to query your
+documents across this distributed system through secondary indexes (Views) has been added to your
+toolbelt. This guide gets you started on how to use them through the
+Ruby SDK, if you want to learn more please refer to
+<a href="http://www.couchbase.com/docs/couchbase-manual-2.0/couchbase-views.html">the
+chapter in the Couchbase Server 2.0 documentation</a>.</p></div>
+<div class="paragraph"><p>Once you created your View in the UI, you can query it from the SDK in
+two steps. First, you grab the design document definition from the
+cluster, second query view with options you need and use results.
+In its simplest form, it looks like this:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900"># 1: Get the design document definition</span></span>
+ddoc <span style="color: #990000">=</span> client<span style="color: #990000">.</span>design_docs<span style="color: #990000">[</span><span style="color: #FF0000">"beer"</span><span style="color: #990000">]</span>
+ddoc<span style="color: #990000">.</span>views      <span style="font-style: italic"><span style="color: #9A1900">#=&gt; ["brewery_beers", "by_location"]</span></span>
+
+<span style="font-style: italic"><span style="color: #9A1900"># 2: Query the view and use results</span></span>
+ddoc<span style="color: #990000">.</span>brewery_beers<span style="color: #990000">.</span>each <span style="font-weight: bold"><span style="color: #0000FF">do</span></span> <span style="color: #990000">|</span>row<span style="color: #990000">|</span>
+  puts row<span style="color: #990000">.</span>key
+  puts row<span style="color: #990000">.</span>value
+  puts row<span style="color: #990000">.</span>id
+  puts row<span style="color: #990000">.</span>doc
+<span style="font-weight: bold"><span style="color: #0000FF">end</span></span></tt></pre></div></div>
+<div class="paragraph"><p>Note that the view request won&#8217;t be executed until you will try to
+access the results. This means that you can pass view object
+(<tt>ddoc.brewery_beers</tt> here) without executing it.</p></div>
+<div class="paragraph"><p>Views can be queried with a large amount of options to change what the
+results of the query will contain. All supported
+options are available as items in options Hash accepted either by the
+view method or by <tt>#each</tt> iterator on the view. Here are some of them:</p></div>
+<div class="hdlist"><table>
+<tr>
+<td class="hdlist1">
+include_docs (Boolean)
+<br />
+</td>
+<td class="hdlist2">
+<p style="margin-top: 0;">
+Used to define if the complete documents
+                         should be fetched with the result (<tt>false</tt>
+                         by default).  Note this will actually fetch
+                         the document itself from the cache, so if it
+                         has been changed or deleted you may not
+                         receive a document that matches the view, or
+                         any at all.
+</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+reduce (Boolean)
+<br />
+</td>
+<td class="hdlist2">
+<p style="margin-top: 0;">
+Used to enable/disable the reduce function (if
+                   there is one defined on the server). <tt>true</tt> by
+                   default.
+</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+limit (Fixnum)
+<br />
+</td>
+<td class="hdlist2">
+<p style="margin-top: 0;">
+Limit the number of results that should be returned.
+</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+descending (Boolean)
+<br />
+</td>
+<td class="hdlist2">
+<p style="margin-top: 0;">
+Revert the sorting order of the result set.
+                       (<tt>false</tt> by default)
+</p>
+</td>
+</tr>
+<tr>
+<td class="hdlist1">
+stale (Boolean, Symbol)
+<br />
+</td>
+<td class="hdlist2">
+<p style="margin-top: 0;">
+Can be used to define the tradeoff between
+                          performance and freshness of the data.
+                           (<tt>:update_after</tt> by default)
+</p>
+</td>
+</tr>
+</table></div>
+<div class="paragraph"><p>Now that we have our View information in place, we can issue the
+query, which actually triggers the scatter-gather data loading process
+on the Cluster. We can use it to iterate over the results and print
+out some details (here is a more complete example which also includes
+the full documents and only fetches the first five results). The
+resulting information is encapsulated inside the <tt>ViewRow</tt> object.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>view <span style="color: #990000">=</span> client<span style="color: #990000">.</span>design_docs<span style="color: #990000">[</span><span style="color: #FF0000">"beer"</span><span style="color: #990000">].</span>brewery_beers
+
+<span style="font-style: italic"><span style="color: #9A1900"># Include all docs and limit to 5</span></span>
+view<span style="color: #990000">.</span>each<span style="color: #990000">(:</span>include_docs <span style="color: #990000">=&gt;</span> <span style="font-weight: bold"><span style="color: #0000FF">true</span></span><span style="color: #990000">,</span> <span style="color: #990000">:</span>limit <span style="color: #990000">=&gt;</span> <span style="color: #993399">5</span><span style="color: #990000">)</span> <span style="font-weight: bold"><span style="color: #0000FF">do</span></span> <span style="color: #990000">|</span>row<span style="color: #990000">|</span>
+  puts row<span style="color: #990000">.</span>id
+  <span style="font-style: italic"><span style="color: #9A1900"># The full document (as a Hash) is available through row.doc</span></span>
+<span style="font-weight: bold"><span style="color: #0000FF">end</span></span></tt></pre></div></div>
+<div class="paragraph"><p>In the logs, you can see the corresponding document keys automatically sorted (ascending):</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>21st_amendment_brewery_cafe
+21st_amendment_brewery_cafe-21a_ipa
+21st_amendment_brewery_cafe-563_stout
+21st_amendment_brewery_cafe-amendment_pale_ale
+21st_amendment_brewery_cafe-bitter_american</tt></pre>
+</div></div>
+</div>
+<div class="sect2">
+<h3 id="_deleting_documents">Deleting Documents</h3>
+<div class="paragraph"><p>If you want to get rid of a document, you can use the delete operation:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>client<span style="color: #990000">.</span>delete<span style="color: #990000">(</span><span style="color: #FF0000">"aass_brewery-juleol"</span><span style="color: #990000">);</span></tt></pre></div></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_advanced_topics">Advanced Topics</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>This chapter introduces some techniques topics that you can use to
+further extend your Couchbase vocabulary.</p></div>
+<div class="sect2">
+<h3 id="_cas_and_locking">CAS and Locking</h3>
+<div class="paragraph"><p>If you need to coordinate shared access on documents, Couchbase helps
+you with two approaches. Depending on the application you may need to
+use both of them, but in general it is better (if feasible) to lean
+towards CAS because it provides the better performance
+characteristics.</p></div>
+<div class="paragraph"><div class="title">Optimistic Locking</div><p>Each document has a unique identifier associated with it (the CAS
+value), which changes when the document itself is mutated. You can
+fetch the CAS value for a given key and pass it to any mutator
+operation to protect it. The update will only succeed, when the CAS
+value is still the same. This is why it&#8217;s called optimistic locking.
+Someone else can still read and try to update the document, but it
+will fail once the CAS value has changed. Here is a example on how to
+do it with the Ruby SDK:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>key <span style="color: #990000">=</span> <span style="color: #FF0000">"eagle_brewing-golden"</span>
+<span style="font-style: italic"><span style="color: #9A1900"># Reads the document with the CAS value.</span></span>
+beer<span style="color: #990000">,</span> flags<span style="color: #990000">,</span> cas <span style="color: #990000">=</span> client<span style="color: #990000">.</span>get<span style="color: #990000">(</span>key<span style="color: #990000">,</span> <span style="color: #990000">:</span>extended <span style="color: #990000">=&gt;</span> <span style="font-weight: bold"><span style="color: #0000FF">true</span></span><span style="color: #990000">)</span>
+
+<span style="font-style: italic"><span style="color: #9A1900"># Updates the document and tries to store it back.</span></span>
+beer<span style="color: #990000">[</span><span style="color: #FF0000">"name"</span><span style="color: #990000">]</span> <span style="color: #990000">=</span> <span style="color: #FF0000">"Some other Name"</span>
+client<span style="color: #990000">.</span>set<span style="color: #990000">(</span>key<span style="color: #990000">,</span> beer<span style="color: #990000">,</span> <span style="color: #990000">:</span>cas <span style="color: #990000">=&gt;</span> cas<span style="color: #990000">,</span> <span style="color: #990000">:</span>flags <span style="color: #990000">=&gt;</span> flags<span style="color: #990000">)</span></tt></pre></div></div>
+<div class="paragraph"><p>Note that this also means that all your application need to follow the
+same code path (cooperative locking). If you use <tt>#set</tt> somewhere else
+in the code on the same document, it will work even if the CAS itself
+is out of date (that&#8217;s because the normal <tt>#set</tt> method doesn&#8217;t care
+about those values at all). Of course, the CAS itself changes then and
+the mutation operation would fail afterwards.</p></div>
+<div class="paragraph"><p>There is also shortcut operation for doing optimistic locking
+<tt>Bucket#cas</tt>. Internally it does the same thing but abstract you from
+storing and passing meta information. Here is the previous example
+rewritten to use this operation:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>key <span style="color: #990000">=</span> <span style="color: #FF0000">"eagle_brewing-golden"</span>
+client<span style="color: #990000">.</span>cas<span style="color: #990000">(</span>key<span style="color: #990000">)</span> <span style="font-weight: bold"><span style="color: #0000FF">do</span></span> <span style="color: #990000">|</span>beer<span style="color: #990000">|</span>
+  beer<span style="color: #990000">[</span><span style="color: #FF0000">"name"</span><span style="color: #990000">]</span> <span style="color: #990000">=</span> <span style="color: #FF0000">"Some other Name"</span>
+  <span style="font-style: italic"><span style="color: #9A1900"># return new value from block</span></span>
+  beer
+<span style="font-weight: bold"><span style="color: #0000FF">end</span></span></tt></pre></div></div>
+<div class="paragraph"><p>Note that you should return new value from the block. If you will skip
+it, it will use <tt>"Some other Name"</tt> as new value.</p></div>
+<div class="paragraph"><div class="title">Pessimistic Locking</div><p>If you want to lock a document completely (or an object graph), you
+can use the <tt>Bucket#get</tt> operation with <tt>:lock</tt> option. The option
+accepts either boolean (where truth does make sense really) or Fixnum
+meaning the time period where the lock is valid. The server will
+release lock after the that period (or maximum value, which configured
+on the server). Other threads can still run <tt>get</tt> queries queries
+against the document, but mutation operations without a CAS will fail.</p></div>
+<div class="paragraph"><p>You can determine actual default and maximum values calling
+<tt>Bucket#stats</tt> without arguments and inspecting keys
+<tt>"ep_getl_default_timeout"</tt> and <tt>"ep_getl_max_timeout"</tt>
+correspondingly.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>key <span style="color: #990000">=</span> <span style="color: #FF0000">"eagle_brewing-golden"</span><span style="color: #990000">;</span>
+
+<span style="font-style: italic"><span style="color: #9A1900"># Get with Lock</span></span>
+beer<span style="color: #990000">,</span> flags<span style="color: #990000">,</span> cas <span style="color: #990000">=</span> client<span style="color: #990000">.</span>get<span style="color: #990000">(</span>key<span style="color: #990000">,</span> <span style="color: #990000">:</span>lock <span style="color: #990000">=&gt;</span> <span style="font-weight: bold"><span style="color: #0000FF">true</span></span><span style="color: #990000">,</span> <span style="color: #990000">:</span>extended <span style="color: #990000">=&gt;</span> <span style="font-weight: bold"><span style="color: #0000FF">true</span></span><span style="color: #990000">);</span>
+
+<span style="font-style: italic"><span style="color: #9A1900"># Update the document</span></span>
+beer<span style="color: #990000">[</span><span style="color: #FF0000">"name"</span><span style="color: #990000">]</span> <span style="color: #990000">=</span> <span style="color: #FF0000">"Some other Name"</span>
+
+<span style="font-style: italic"><span style="color: #9A1900"># Try to set without the lock</span></span>
+client<span style="color: #990000">.</span>set<span style="color: #990000">(</span>key<span style="color: #990000">,</span> beer<span style="color: #990000">,</span> <span style="color: #990000">:</span>flags <span style="color: #990000">=&gt;</span> flags<span style="color: #990000">)</span>
+<span style="font-style: italic"><span style="color: #9A1900">#=&gt; will raise Couchbase::Error::KeyExists</span></span>
+
+<span style="font-style: italic"><span style="color: #9A1900"># Try to set with the CAS aquired, will be OK</span></span>
+client<span style="color: #990000">.</span>set<span style="color: #990000">(</span>key<span style="color: #990000">,</span> beer<span style="color: #990000">,</span> <span style="color: #990000">:</span>flags <span style="color: #990000">=&gt;</span> flags<span style="color: #990000">,</span> <span style="color: #990000">:</span>cas <span style="color: #990000">=&gt;</span> cas<span style="color: #990000">)</span></tt></pre></div></div>
+<div class="paragraph"><p>Once you update the document, the lock will be released. There is also
+the <tt>Bucket#unlock</tt> method available through which you can unlock the
+document.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_persistence_and_replication">Persistence and Replication</h3>
+<div class="paragraph"><p>By default, the mutation operations return when Couchbase Server has
+accepted the command and stored it in memory (disk persistence and
+replication is handled asynchronously by the cluster). That&#8217;s one of
+the reason why it&#8217;s so fast. For most use-cases, that&#8217;s the behavior
+that you need. Sometimes though, you want to trade in performance for
+data-safety and wait until the document has been saved to disk and/or
+replicated to other hosts.</p></div>
+<div class="paragraph"><p>The Ruby SDK provides <tt>:observe</tt> option for all mutation operations.
+You can claim various persistence conditions using this option.
+Basically its argument is a Hash with three possible keys, describing
+the condition when the mutator will yield the result:</p></div>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+<tt>:replicated</tt> (Fixnum) describe how many nodes should receive
+replicated copy of the document.
+</p>
+</li>
+<li>
+<p>
+<tt>:persisted</tt> (Fixnum) describe how many nodes should persist the
+document to the disk. The nodes include master node, where the key
+resides and all replica nodes.
+</p>
+</li>
+<li>
+<p>
+<tt>:timeout</tt> (Fixnum) the timeout period in microseconds. After
+passing, the operation condition will be considered timed out and
+appropriate exception will be thrown. Default value could be addressed
+using <tt>Bucket#default_observe_timeout</tt>.
+</p>
+</li>
+</ol></div>
+<div class="paragraph"><p>Here is an example on how to make sure that the document has been
+persisted on its master node, but also replicated to at least one of
+its replicas.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>key <span style="color: #990000">=</span> <span style="color: #FF0000">"important"</span>
+value <span style="color: #990000">=</span> <span style="color: #FF0000">"document"</span>
+client<span style="color: #990000">.</span>set<span style="color: #990000">(</span>key<span style="color: #990000">,</span> value<span style="color: #990000">,</span> <span style="color: #990000">:</span>observe <span style="color: #990000">=&gt;</span> <span style="color: #FF0000">{</span><span style="color: #990000">:</span>persisted <span style="color: #990000">=&gt;</span> <span style="color: #993399">1</span><span style="color: #990000">,</span> <span style="color: #990000">:</span>replicated <span style="color: #990000">=&gt;</span> <span style="color: #993399">1</span><span style="color: #FF0000">}</span><span style="color: #990000">)</span></tt></pre></div></div>
+<div class="paragraph"><p>You can also separate persistence requirement from actual operations,
+and in this case, you can wait for several keys:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>keys <span style="color: #990000">=</span> <span style="color: #990000">[]</span>
+<span style="color: #990000">(</span><span style="color: #993399">1</span><span style="color: #990000">..</span><span style="color: #993399">5</span><span style="color: #990000">).</span>each <span style="font-weight: bold"><span style="color: #0000FF">do</span></span> <span style="color: #990000">|</span>nn<span style="color: #990000">|</span>
+  key <span style="color: #990000">=</span> <span style="color: #FF0000">"important-#{nn}"</span>
+  keys <span style="color: #990000">&lt;&lt;</span> key
+  client<span style="color: #990000">.</span>set<span style="color: #990000">(</span>key<span style="color: #990000">,</span> <span style="color: #FF0000">"document-#{nn}"</span><span style="color: #990000">)</span>
+<span style="font-weight: bold"><span style="color: #0000FF">end</span></span>
+client<span style="color: #990000">.</span>observe_and_wait<span style="color: #990000">(</span>keys<span style="color: #990000">,</span> <span style="color: #990000">:</span>persisted <span style="color: #990000">=&gt;</span> <span style="color: #993399">1</span><span style="color: #990000">,</span> <span style="color: #990000">:</span>replicated <span style="color: #990000">=&gt;</span> <span style="color: #993399">1</span><span style="color: #990000">)</span></tt></pre></div></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_couchbase_rails_tutorial">Couchbase Rails Tutorial</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>The goal of this chapter is to show how to write more advanced
+application using Couchbase and Rails framework.</p></div>
+<div class="paragraph"><p>We assume here that you are passed "Getting Started" section already,
+if not, we recommend to take a look, because it describes how to
+install and verify Ruby SDK.</p></div>
+<div class="sect2">
+<h3 id="_tl_dr">TL;DR</h3>
+<div class="paragraph"><p>For the purposes of this tutorial, we have specially prepared an
+example application for you to follow along with. The application
+uses a bucket with one of the sample datasets which come with Couchbase
+Server itself: <tt>beer-sample</tt>. If you haven&#8217;t already, download the
+latest Couchbase Server 2.0 release and install it. While following
+the download instructions and setup wizard, make sure you install the
+<tt>beer-sample</tt> default bucket. It contains a sample data set of beers and
+breweries, which we&#8217;ll use in our examples here. If you&#8217;ve
+already installed Couchbase Server 2.0 and didn&#8217;t install the
+<tt>beer-sample</tt> bucket (or if you deleted it), just open the Web-UI and
+navigate to "Settings/Sample Buckets".  Select the <tt>beer-sample</tt>
+checkbox and click "Create". In the right hand corner you&#8217;ll see a
+notification box that will disappear once the bucket is ready to be
+used.</p></div>
+<div class="paragraph"><p>After that you can clone the complete repository from couchbaselabs on github:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>shell&gt; git clone git://github.com/couchbaselabs/couchbase-beer.rb.git
+Cloning into 'couchbase-beer.rb'...
+remote: Counting objects: 409, done.
+remote: Compressing objects: 100% (254/254), done.
+remote: Total 409 (delta 183), reused 340 (delta 114)
+Receiving objects: 100% (409/409), 235.17 KiB | 130 KiB/s, done.
+Resolving deltas: 100% (183/183), done.</tt></pre>
+</div></div>
+<div class="paragraph"><p>Navigate to the directory and install all application dependencies:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>shell&gt; cd couchbase-beer.rb/
+shell&gt; bundle install
+...snip...
+Your bundle is complete! Use `bundle show [gemname]` to see where a bundled gem is installed.</tt></pre>
+</div></div>
+<div class="paragraph"><p>That&#8217;s it. Assuming that the server with <tt>beer-sample</tt> bucket is up
+and running on localhost, you can just start ruby web server:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>shell&gt; rails server
+=&gt; Booting Thin
+=&gt; Rails 3.2.8 application starting in development on http://0.0.0.0:3000
+=&gt; Call with -d to detach
+=&gt; Ctrl-C to shutdown server
+&gt;&gt; Thin web server (v1.5.0 codename Knife)
+&gt;&gt; Maximum connections set to 1024
+&gt;&gt; Listening on 0.0.0.0:3000, CTRL+C to stop</tt></pre>
+</div></div>
+<div class="paragraph"><p>Then navigate to <a href="http://localhost:3000/">http://localhost:3000/</a>. You should see something like that:</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="image/couchbase-beer.rb-home.png" alt="image/couchbase-beer.rb-home.png" />
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_create_application_skeleton">Create Application Skeleton</h3>
+<div class="paragraph"><p>If you would like to learn how to create this application from scratch
+just continue reading. As with any rails application we will use
+generators a lot. Since we don&#8217;t need ActiveRecord we&#8217;ll let
+<tt>rails new</tt> know about it.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>shell&gt; rails new couchbase-beer.rb -O --old-style-hash</tt></pre>
+</div></div>
+<div class="paragraph"><p>Now navigate to the project root and open up <tt>Gemfile</tt> in your
+favorite editor. First, we need to add the Couchbase client libraries there:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>gem <span style="color: #FF0000">'couchbase'</span>
+gem <span style="color: #FF0000">'couchbase-model'</span></tt></pre></div></div>
+<div class="paragraph"><p>Skipping the version will get the latest stable versions of those gems. We
+will use the <a href="https://rubygems.org/gems/couchbase-model">couchbase-model</a>
+gem to define our models in a declarative way much like all rails developers
+describe their models with ActiveRecord. Apart from that we
+will use <tt>yajl-ruby</tt>, a high-performance JSON parser/generator,
+<tt>rdiscount</tt> to render descriptions as Markdown, and <tt>omniauth-twitter</tt>
+for authentication.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>gem <span style="color: #FF0000">'yajl-ruby'</span>
+gem <span style="color: #FF0000">'rdiscount'</span>
+gem <span style="color: #FF0000">'omniauth-twitter'</span></tt></pre></div></div>
+<div class="paragraph"><p>The complete <tt>Gemfile</tt> will looks like this:</p></div>
+<div class="listingblock">
+<div class="title">Gemfile</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>source <span style="color: #FF0000">'https://rubygems.org'</span>
+
+gem <span style="color: #FF0000">'rails'</span><span style="color: #990000">,</span> <span style="color: #FF0000">'3.2.8'</span>
+
+gem <span style="color: #FF0000">"eventmachine"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"~&gt; 1.0.0"</span>
+gem <span style="color: #FF0000">'thin'</span><span style="color: #990000">,</span> <span style="color: #FF0000">"~&gt; 1.5.0"</span>
+gem <span style="color: #FF0000">'jquery-rails'</span>
+gem <span style="color: #FF0000">'yajl-ruby'</span>
+gem <span style="color: #FF0000">'couchbase'</span>
+gem <span style="color: #FF0000">'couchbase-model'</span>
+gem <span style="color: #FF0000">'rdiscount'</span>
+gem <span style="color: #FF0000">'omniauth'</span>
+gem <span style="color: #FF0000">'omniauth-twitter'</span>
+
+gem <span style="color: #FF0000">'capistrano'</span>
+
+group <span style="color: #990000">:</span>development<span style="color: #990000">,</span> <span style="color: #990000">:</span>test <span style="font-weight: bold"><span style="color: #0000FF">do</span></span>
+  gem <span style="color: #FF0000">'debugger'</span>
+<span style="font-weight: bold"><span style="color: #0000FF">end</span></span>
+
+group <span style="color: #990000">:</span>assets <span style="font-weight: bold"><span style="color: #0000FF">do</span></span>
+  gem <span style="color: #FF0000">'sass-rails'</span><span style="color: #990000">,</span> <span style="color: #FF0000">'~&gt; 3.2.3'</span>
+  gem <span style="color: #FF0000">'uglifier'</span><span style="color: #990000">,</span> <span style="color: #FF0000">'&gt;= 1.0.3'</span>
+<span style="font-weight: bold"><span style="color: #0000FF">end</span></span></tt></pre></div></div>
+<div class="paragraph"><p>Next step will be to configure Couchbase connection, this step should
+be familiar to the rails developer, because <tt>couchbase-model</tt> brings
+YAML-styled configuration, so if you know how
+<tt>config/database.yml</tt> works, you can make some assumtions about how
+<tt>config/couchbase.yml</tt> works. To generate a config, use the <tt>couchbase:config</tt>
+generator:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>shell&gt; rails generate couchbase:config
+      create  config/couchbase.yml</tt></pre>
+</div></div>
+<div class="paragraph"><p>Since our bucket name differs from the project name, you should update
+the <tt>bucket</tt> property in the config. Also if your Couchbase Server is
+not running on the local machine, you should also change the hostname
+in the config. After you&#8217;ve made your modifications, your config should look like this:</p></div>
+<div class="listingblock">
+<div class="title">config/couchbase.yml</div>
+<div class="content">
+<pre><tt>common: &amp;common
+  hostname: localhost
+  port: 8091
+  username:
+  password:
+  pool: default
+
+development:
+  &lt;&lt;: *common
+  bucket: beer-sample
+
+production:
+  &lt;&lt;: *common
+  bucket: beer-sample</tt></pre>
+</div></div>
+<div class="paragraph"><p>That&#8217;s it for configuration, let&#8217;s move forward and create some
+models.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_define_models">Define Models</h3>
+<div class="paragraph"><p>To create a model, all you need is just define class and inherit from
+<tt>Couchbase::Model</tt>. Lets dissect the <tt>Brewery</tt> model from the application.</p></div>
+<div class="listingblock">
+<div class="title">app/models/brewery.rb</div>
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">class</span></span> Brewery <span style="color: #990000">&lt;</span> Couchbase<span style="color: #990000">::</span>Model
+  attribute <span style="color: #990000">:</span>name<span style="color: #990000">,</span> <span style="color: #990000">:</span>description
+  attribute <span style="color: #990000">:</span>country<span style="color: #990000">,</span> <span style="color: #990000">:</span>state<span style="color: #990000">,</span> <span style="color: #990000">:</span>city<span style="color: #990000">,</span> <span style="color: #990000">:</span>address
+  attribute <span style="color: #990000">:</span>phone
+  attribute <span style="color: #990000">:</span>geo
+  attribute <span style="color: #990000">:</span>updated
+
+  view <span style="color: #990000">:</span>all<span style="color: #990000">,</span> <span style="color: #990000">:</span>limit <span style="color: #990000">=&gt;</span> <span style="color: #993399">31</span>
+  view <span style="color: #990000">:</span>all_with_beers
+  view <span style="color: #990000">:</span>by_country<span style="color: #990000">,</span> <span style="color: #990000">:</span>include_docs <span style="color: #990000">=&gt;</span> <span style="font-weight: bold"><span style="color: #0000FF">false</span></span><span style="color: #990000">,</span> <span style="color: #990000">:</span>group <span style="color: #990000">=&gt;</span> <span style="font-weight: bold"><span style="color: #0000FF">true</span></span>
+  view <span style="color: #990000">:</span>points<span style="color: #990000">,</span> <span style="color: #990000">:</span>spatial <span style="color: #990000">=&gt;</span> <span style="font-weight: bold"><span style="color: #0000FF">true</span></span>
+
+  <span style="font-weight: bold"><span style="color: #0000FF">def</span></span> full_address
+    <span style="color: #990000">[</span>country<span style="color: #990000">,</span> state<span style="color: #990000">,</span> city<span style="color: #990000">,</span> address<span style="color: #990000">].</span>reject<span style="color: #990000">(&amp;:</span>blank?<span style="color: #990000">).</span>join<span style="color: #990000">(</span><span style="color: #FF0000">', '</span><span style="color: #990000">)</span>
+  <span style="font-weight: bold"><span style="color: #0000FF">end</span></span>
+
+  <span style="font-weight: bold"><span style="color: #0000FF">def</span></span> location
+    <span style="color: #990000">[</span>country<span style="color: #990000">,</span> state<span style="color: #990000">].</span>reject<span style="color: #990000">(&amp;:</span>blank?<span style="color: #990000">).</span>join<span style="color: #990000">(</span><span style="color: #FF0000">', '</span><span style="color: #990000">)</span>
+  <span style="font-weight: bold"><span style="color: #0000FF">end</span></span>
+<span style="font-weight: bold"><span style="color: #0000FF">end</span></span></tt></pre></div></div>
+<div class="paragraph"><p>The first part of the model contains attribute definitions.  The <tt>attribute</tt>
+macro defines a pair of accessors and helps to maintain map of
+attributes-values. You can also specify default a value for each
+attribute:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">class</span></span> Post <span style="color: #990000">&lt;</span> Couchbase<span style="color: #990000">::</span>Model
+  attribute <span style="color: #990000">:</span>title<span style="color: #990000">,</span> <span style="color: #990000">:</span>body
+  attribute <span style="color: #990000">:</span>timestamp<span style="color: #990000">,</span> <span style="color: #990000">:</span>default <span style="color: #990000">=&gt;</span> lambda<span style="color: #FF0000">{</span> Time<span style="color: #990000">.</span>now <span style="color: #FF0000">}</span>
+<span style="font-weight: bold"><span style="color: #0000FF">end</span></span>
+
+Post<span style="color: #990000">.</span>new<span style="color: #990000">(:</span>title <span style="color: #990000">=&gt;</span> <span style="color: #FF0000">"Hello, World!"</span><span style="color: #990000">)</span>
+<span style="font-style: italic"><span style="color: #9A1900">#=&gt; #&lt;Post timestamp: 2012-12-07 16:03:56 +0300, title: "Hello, World!"&gt;</span></span></tt></pre></div></div>
+<div class="paragraph"><p>The next block is about defining views. One way to play with views is
+Couchbase Server Admin Console, but it may not be the best to keep parts
+of the code in different places. After all Views are implemented in
+Javascript and carry part of business logic. <tt>couchbase-model</tt> has
+solution for it. Each time the server starts (in development mode
+for each request), the application will check the filesystem changes
+of the map/reduce javascript files and update design document if
+needed. There is also the rails generator for views. It will put
+view stubs for you in proper places. Here, for example, is the model layout for
+this particular application:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>app/models/
+├── beer
+│   ├── all
+│   │   └── map.js
+│   └── by_category
+│       ├── map.js
+│       └── reduce.js
+├── beer.rb
+├── brewery
+│   ├── all
+│   │   └── map.js
+│   ├── all_with_beers
+│   │   └── map.js
+│   ├── by_country
+│   │   ├── map.js
+│   │   └── reduce.js
+│   └── points
+│       └── spatial.js
+├── brewery.rb
+├── favorites.rb
+└── user.rb</tt></pre>
+</div></div>
+<div class="paragraph"><p>For each model which has views,
+you should create a directory with the same name and put in the appropriate
+javascript files. Each should implement the corresponding parts of
+the view. For example <tt>_design/brewery/_view/by_country</tt> does require both
+map and reduce parts. To generate a new view you should pass model name
+and view name you need to get:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>shell&gt; rails generate couchbase:view beer test
+      create  app/models/beer/test/map.js
+      create  app/models/beer/test/reduce.js</tt></pre>
+</div></div>
+<div class="paragraph"><p>Those automatically generated files are full of comments, so they
+are worth reading as quick start about how to write View indexes.  The offical
+documentation for how to do so is in the Couchbase Server manual.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_implement_controllers">Implement Controllers</h3>
+<div class="paragraph"><p>Now lets dissect the controllers from the project. This is where data is
+selected to display to user. For example <tt>BreweriesController</tt>:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">class</span></span> BreweriesController <span style="color: #990000">&lt;</span> ApplicationController
+  <span style="font-weight: bold"><span style="color: #0000FF">def</span></span> index
+    filter <span style="color: #990000">=</span> params<span style="color: #990000">.</span>extract!<span style="color: #990000">(:</span>start_key<span style="color: #990000">,</span> <span style="color: #990000">:</span>end_key<span style="color: #990000">).</span>reject<span style="color: #FF0000">{</span><span style="color: #990000">|</span>_<span style="color: #990000">,</span> v<span style="color: #990000">|</span> v<span style="color: #990000">.</span>blank?<span style="color: #FF0000">}</span>
+    <span style="color: #009900">@breweries</span> <span style="color: #990000">=</span> Brewery<span style="color: #990000">.</span>all<span style="color: #990000">(</span>filter<span style="color: #990000">).</span>to_a
+    <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #009900">@breweries</span><span style="color: #990000">.</span>size <span style="color: #990000">&gt;</span> <span style="color: #993399">30</span>
+      <span style="color: #009900">@last_key</span> <span style="color: #990000">=</span> <span style="color: #009900">@breweries</span><span style="color: #990000">.</span>pop<span style="color: #990000">.</span>try<span style="color: #990000">(:</span>key<span style="color: #990000">)</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">end</span></span>
+    respond_to <span style="font-weight: bold"><span style="color: #0000FF">do</span></span> <span style="color: #990000">|</span>format<span style="color: #990000">|</span>
+      format<span style="color: #990000">.</span>html
+      format<span style="color: #990000">.</span>json <span style="font-weight: bold"><span style="color: #0000FF">do</span></span>
+        render <span style="color: #990000">:</span>json <span style="color: #990000">=&gt;</span> <span style="color: #FF0000">{</span><span style="color: #990000">:</span>last_key <span style="color: #990000">=&gt;</span> <span style="color: #009900">@last_key</span><span style="color: #990000">,</span> <span style="color: #990000">:</span>items <span style="color: #990000">=&gt;</span> <span style="color: #009900">@breweries</span><span style="color: #FF0000">}</span>
+      <span style="font-weight: bold"><span style="color: #0000FF">end</span></span>
+    <span style="font-weight: bold"><span style="color: #0000FF">end</span></span>
+  <span style="font-weight: bold"><span style="color: #0000FF">end</span></span>
+
+  <span style="font-weight: bold"><span style="color: #0000FF">def</span></span> show
+    <span style="color: #009900">@brewery</span><span style="color: #990000">,</span> <span style="color: #990000">*</span><span style="color: #009900">@beers</span> <span style="color: #990000">=</span> Brewery<span style="color: #990000">.</span>all_with_beers<span style="color: #990000">(:</span>start_key <span style="color: #990000">=&gt;</span> <span style="color: #990000">[</span>params<span style="color: #990000">[:</span>id<span style="color: #990000">]],</span>
+                                               <span style="color: #990000">:</span>end_key <span style="color: #990000">=&gt;</span> <span style="color: #990000">[</span><span style="color: #FF0000">"#{params[:id]}\uefff"</span><span style="color: #990000">]).</span>to_a
+  <span style="font-weight: bold"><span style="color: #0000FF">end</span></span>
+<span style="font-weight: bold"><span style="color: #0000FF">end</span></span></tt></pre></div></div>
+<div class="paragraph"><p>It has two actions:</p></div>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+"index" which is supposed to pull the list of breweries. It might look
+  complex, but it isn&#8217;t. In first line we are preparing query
+  parameters for views. In particular, we are interested in the <tt>start_key</tt>
+  and <tt>end_key</tt> parameters, but we need them only if they aren&#8217;t blank
+  (i.e. not nil and not empty string). The second step is to execute
+  the view and get results immediately. Your application might want to
+  fetch the entries from view on demand in a lazy manner, then you no
+  need to call the <tt>#to_a</tt> method and iterate over them or call methods
+  like <tt>#next</tt>. In this particular example we are fetching 31 records
+  and are trying to pop last one to use it later for "infinite"
+  scrolling. The end of the method is responsible for rendering
+  the data in two formats, by default it will use HTML, but if the application is responding to
+  an AJAX request with the <tt>Accept: application/json</tt> header, it will instead
+  render the JSON representation of our models.
+</p>
+</li>
+<li>
+<p>
+"show" uses another view from the <tt>Brewery</tt> model, which
+  collates breweries with beer for easier access. Here is a map function
+  which does that job:
+</p>
+<div class="listingblock">
+<div class="content">
+<pre><tt>function(doc, meta) {
+  switch(doc.type) {
+  case "brewery":
+    emit([meta.id]);
+    break;
+  case "beer":
+    if (doc.brewery_id &amp;&amp; doc.name) {
+      emit([doc.brewery_id, doc.name]);
+    }
+    break;
+  }
+}</tt></pre>
+</div></div>
+<div class="paragraph"><p>As you can see we are using a compound key with brewery ID in the
+first position and the document name in the second position. Because we are selecting
+only beers without null names, they will be sorted after the
+breweries. By doing so, when we filter result by the first key only, the
+<tt>@brewery</tt> variable will receive first element of the sequence, and
+<tt>@beers</tt> will get the rest of the collection because of the splat (<tt>*</tt>)
+operator.</p></div>
+</li>
+</ol></div>
+</div>
+<div class="sect2">
+<h3 id="_bonus_spatial_queries_sessions_and_cache">Bonus: Spatial Queries, Sessions and Cache</h3>
+<div class="paragraph"><p>One of the experimental features of the Couchbase Server is spatial
+views. These kind of views allow you to build indexes on geo
+attributes of your data. Sample application has part, demostrating
+power of spatial views. Click on the "Map" link in the menu, and if
+you allowed your browser to fetch your current location it will
+position the center of the map to your, or to Mountain View otherwise.
+After that it will execute spatial query using map bounds and the
+Couchbase Server will give you all the breweries which are nearby.
+Lets take a look at the implemetation. The core of this feature in
+<tt>brewery/points/spatial.js</tt>:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>function(doc, meta) {
+  if (doc.geo &amp;&amp; doc.geo.lng &amp;&amp; doc.geo.lat &amp;&amp; doc.name) {
+    emit({type: "Point", coordinates: [doc.geo.lng, doc.geo.lat]},
+         {name: doc.name, geo: doc.geo});
+  }
+}</tt></pre>
+</div></div>
+<div class="paragraph"><p>The function will emit Point object and the name with coordinates as
+the payload. The action in the controller is quite trivial, it
+transmit the result to the frontend in JSON representation, where
+google maps is rendering markers for each object.</p></div>
+<div class="paragraph"><p>Except nice extensions, provided by <tt>couchbase-model</tt> library,
+<tt>couchase</tt> gem itself has few more nice features which could be useful
+in the web application. For example, you can easily substitute your
+session or cache store in rails (or even in rack) with Couchbase
+Server.</p></div>
+<div class="paragraph"><p>To use Couchbase as cache store in rails, just put following line in
+your <tt>config/application.rb</tt> file:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>config<span style="color: #990000">.</span>cache_store <span style="color: #990000">=</span> <span style="color: #990000">:</span>couchbase_store</tt></pre></div></div>
+<div class="paragraph"><p>You can also pass additional connection options there</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>cache_options <span style="color: #990000">=</span> <span style="color: #FF0000">{</span>
+  <span style="color: #990000">:</span>bucket <span style="color: #990000">=&gt;</span> <span style="color: #FF0000">'protected'</span><span style="color: #990000">,</span>
+  <span style="color: #990000">:</span>username <span style="color: #990000">=&gt;</span> <span style="color: #FF0000">'protected'</span><span style="color: #990000">,</span>
+  <span style="color: #990000">:</span>password <span style="color: #990000">=&gt;</span> <span style="color: #FF0000">'secret'</span><span style="color: #990000">,</span>
+  <span style="color: #990000">:</span>expires_in <span style="color: #990000">=&gt;</span> <span style="color: #993399">30</span><span style="color: #990000">.</span>seconds
+<span style="color: #FF0000">}</span>
+config<span style="color: #990000">.</span>cache_store <span style="color: #990000">=</span> <span style="color: #990000">:</span>couchbase_store<span style="color: #990000">,</span> cache_options</tt></pre></div></div>
+<div class="paragraph"><p>To use Couchbase as the session store you should update your
+<tt>config/initializers/session_store.rb</tt> file</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #000080">require</span></span> <span style="color: #FF0000">'action_dispatch/middleware/session/couchbase_store'</span>
+AppName<span style="color: #990000">::</span>Application<span style="color: #990000">.</span>config<span style="color: #990000">.</span>session_store <span style="color: #990000">:</span>couchbase_store</tt></pre></div></div>
+<div class="paragraph"><p>Or remove this file and add following line to your <tt>config/application.rb</tt>:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #000080">require</span></span> <span style="color: #FF0000">'action_dispatch/middleware/session/couchbase_store'</span>
+config<span style="color: #990000">.</span>session_store <span style="color: #990000">:</span>couchbase_store</tt></pre></div></div>
+<div class="paragraph"><p>You can also pass additional options:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #000080">require</span></span> <span style="color: #FF0000">'action_dispatch/middleware/session/couchbase_store'</span>
+session_options <span style="color: #990000">=</span> <span style="color: #FF0000">{</span>
+  <span style="color: #990000">:</span>expire_after <span style="color: #990000">=&gt;</span> <span style="color: #993399">5</span><span style="color: #990000">.</span>minutes<span style="color: #990000">,</span>
+  <span style="color: #990000">:</span>couchbase <span style="color: #990000">=&gt;</span> <span style="color: #FF0000">{</span><span style="color: #990000">:</span>bucket <span style="color: #990000">=&gt;</span> <span style="color: #FF0000">"sessions"</span><span style="color: #990000">,</span> <span style="color: #990000">:</span>default_format <span style="color: #990000">=&gt;</span> <span style="color: #990000">:</span>json<span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span>
+config<span style="color: #990000">.</span>session_store <span style="color: #990000">:</span>couchbase_store<span style="color: #990000">,</span> session_options</tt></pre></div></div>
+<div class="paragraph"><p>In the example above we are specifying format as JSON which allows us
+to share sessions in heterogenous environment, and also analyze them
+using Map/Reduce. But keep in the mind that not everything in typical
+rails application could be serialized to JSON, for example
+<tt>ActionDispatch::Flash::FlashHash</tt>. This is why the library serialize
+sessions using <tt>Marshal.dump</tt> by default.</p></div>
+</div>
+</div>
+</div>
+</div>
+<div id="footnotes"><hr /></div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2012-12-17 11:50:42 FET
+</div>
+</div>
+</body>
+</html>
